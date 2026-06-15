@@ -1,5 +1,6 @@
 import { StyleSheet, Text, View } from "react-native";
-import Button from "./constants/ui/Button";
+import { LinearGradient } from "expo-linear-gradient";
+
 
 export default function Index() {
   const log = () => {
@@ -8,7 +9,12 @@ export default function Index() {
 
   return (
     <View style={styles.container}>
-      <Button onPress={log} title="Hello" style={styles.button} />
+      <LinearGradient
+        start={{x: 0.20, y: 0.40}} end={{x: 1, y: 1}}
+        locations={[0,0.5,0.7]}
+        colors={["rgba(255,1,67,1)", "rgba(224,86,120,1)", "rgba(210,129,146,1)", "rgba(196,165,168,1)", "transparent" ]}
+        style={styles.background}
+      />
     </View>
   );
 }
@@ -19,12 +25,11 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
   },
-  button: {
-    backgroundColor: "#333",
-    padding: 4,
-    color: "#fff",
-    borderRadius: 8,
-    fontSize: 20,
-    fontWeight: 700
+  background: {
+    position: "absolute",
+    left: 0,
+    right: 0,
+    top: 0,
+    height: 1200
   },
 });
