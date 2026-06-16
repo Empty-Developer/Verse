@@ -1,5 +1,6 @@
 import { StyleSheet, Text, View } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
+import Input from "./constants/ui/Input";
 
 
 export default function Index() {
