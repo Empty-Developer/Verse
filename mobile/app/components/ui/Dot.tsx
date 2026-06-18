@@ -58,7 +58,7 @@ export default function Dot({ index, x }: Props) {
     const backgroundColor = interpolateColor(
       x.value,
       [0, SCREEN_WIDTH, 2 * SCREEN_WIDTH, 3 * SCREEN_WIDTH],
-      ['#e1ff00ff', '#09ff00ff', '#ffffffff', '#ff0000ff']
+      ['#60230b', '#BFD75C', '#F2FF00', '#651D09']
     )
     return {
       backgroundColor: backgroundColor

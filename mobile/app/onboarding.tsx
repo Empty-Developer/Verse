@@ -9,7 +9,7 @@ import Animated, {
 } from "react-native-reanimated";
 import RenderItem from "@/app/components/RenderItem";
 import slider, { OnboardingData } from "@/service/options/OnboardingService";
-import Pagination from "@/app/components/pagination/Pagination";
+import Pagination from "@/app/components/ui/Pagination";
 
 export default function Onboarding() {
   const finishOnboarding = async () => {

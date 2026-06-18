@@ -11,31 +11,31 @@ export interface OnboardingData {
 const slider: OnboardingData[] = [
   {
     id: 1,
-    animation: require("@/assets/animated/Game asset-1.json"),
+    animation: require("@/assets/animated/characters.json"),
     text: "Collection of Texts: Publish",
-    textColor: '#005b4f',
-    backgroundColor: '#067FE2'
+    textColor: '#60230b',
+    backgroundColor: '#e098a9'
   },
   {
     id: 2,
-    animation: require("@/assets/animated/Characters.json"),
+    animation: require("@/assets/animated/mirror.json"),
     text: "Collection of Texts: Publish",
-    textColor: '#005b4f',
-    backgroundColor: '#E29700'
-  },
-  {
-    id: 3,
-    animation: require("@/assets/animated/Hero.json"),
-    text: "Collection of Texts: Publish",
-    textColor: '#005b4f',
+    textColor: '#BFD75C',
     backgroundColor: '#A173CD'
   },
   {
-    id: 4,
-    animation: require("@/assets/animated/Animated movies.json"),
+    id: 3,
+    animation: require("@/assets/animated/tower.json"),
     text: "Collection of Texts: Publish",
-    textColor: '#005b4f',
-    backgroundColor: '#8BC151'
+    textColor: '#F2FF00',
+    backgroundColor: '#2830B5'
+  },
+  {
+    id: 4,
+    animation: require("@/assets/animated/gift.json"),
+    text: "Collection of Texts: Publish",
+    textColor: '#651D09',
+    backgroundColor: '#89D452'
   },
 
 ];
