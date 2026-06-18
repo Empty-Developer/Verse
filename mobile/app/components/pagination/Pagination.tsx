@@ -1,7 +1,8 @@
 import { StyleSheet, Text, View } from 'react-native'
 import React from 'react'
-import { OnboardingData } from '../options/OnboardingService'
+import { OnboardingData } from '../../../service/options/OnboardingService'
 import { SharedValue } from 'react-native-reanimated';
+import Dot from './Dot';
 
 type Props = {
   slider: OnboardingData[];
