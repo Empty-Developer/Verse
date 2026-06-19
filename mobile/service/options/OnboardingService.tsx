@@ -12,28 +12,28 @@ const slider: OnboardingData[] = [
   {
     id: 1,
     animation: require("@/assets/animated/characters.json"),
-    text: "Collection of Texts: Publish",
+    text: "Start Your Adventure With a Look at New Books",
     textColor: '#60230b',
     backgroundColor: '#e098a9'
   },
   {
     id: 2,
     animation: require("@/assets/animated/mirror.json"),
-    text: "Collection of Texts: Publish",
+    text: "Discover a New Side Of Yourself With New Authors",
     textColor: '#BFD75C',
     backgroundColor: '#A173CD'
   },
   {
     id: 3,
     animation: require("@/assets/animated/tower.json"),
-    text: "Collection of Texts: Publish",
+    text: "Find New Inspiration By Reading New Texts",
     textColor: '#F2FF00',
     backgroundColor: '#2830B5'
   },
   {
     id: 4,
     animation: require("@/assets/animated/gift.json"),
-    text: "Collection of Texts: Publish",
+    text: "Get The Chance To Become a Great Author\nLet's Get Started",
     textColor: '#651D09',
     backgroundColor: '#89D452'
   },

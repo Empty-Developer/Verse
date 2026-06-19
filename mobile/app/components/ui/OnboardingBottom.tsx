@@ -1,5 +1,6 @@
 import {
   FlatList,
+  Pressable,
   StyleSheet,
   TouchableWithoutFeedback,
   View,
@@ -9,39 +10,48 @@ import { AnimatedRef, SharedValue } from "react-native-reanimated";
 import { OnboardingData } from "@/service/options/OnboardingService";
 import { ChevronRight } from "lucide-react-native";
 
-type Props = {
+interface ButtonProps {
   sliderLength: number;
-  flatlistIndex: SharedValue<number>;
-  flatlistRef: AnimatedRef<FlatList<OnboardingData>>;
+  flatListIndex: SharedValue<number>;
+  flatListRef: AnimatedRef<FlatList<OnboardingData>>;
   x: SharedValue<number>;
 };
 
-export default function OnboardingBottom() {
+export default function OnboardingBottom({sliderLength, flatListIndex, flatListRef, x}: ButtonProps) {
+  const handlerPressNext = () => {
+    /*
+      press the button will go
+      the next index, but if is already at
+      the last index
+      the arrow will change to text and if pressed
+      it will go the next screen
+    */
+    if(flatListIndex.value < sliderLength - 1) {
+      flatListRef.current?.scrollToIndex({index: flatListIndex.value + 1})
+    } else {
+      console.log('navigate to nest screen')
+    }
+  }
   return (
-    <TouchableWithoutFeedback>
-      <View style={styles.container}>
-        <ChevronRight
-          size={36}
-          color={'white'}
-          style={styles.arrow}
-        />
-      </View>
-    </TouchableWithoutFeedback>
+    <Pressable style={styles.container} onPress={handlerPressNext}>
+      <ChevronRight size={30} color={"white"} style={styles.arrow}/>
+    </Pressable>
   );
 }
 
 const styles = StyleSheet.create({
   arrow: {
-    position: 'absolute'
+    position: "absolute",
+    pointerEvents: 'none',
   },
   container: {
-    backgroundColor: 'black',
+    backgroundColor: "black",
     padding: 10,
     borderRadius: 100,
-    justifyContent: 'center',
-    alignItems: 'center',
-    overflow: 'hidden',
+    justifyContent: "center",
+    alignItems: "center",
+    overflow: "hidden",
     width: 60,
     height: 60,
-  }
+  },
 });

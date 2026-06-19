@@ -47,6 +47,7 @@ export default function Onboarding() {
   return (
     <View style={styles.container}>
       <Animated.FlatList
+        ref={flatListRef}
         data={slider}
         renderItem={({ item, index }) => {
           return <RenderItem item={item} index={index} x={x} />;
