@@ -11,7 +11,7 @@ export interface OnboardingData {
 const slider: OnboardingData[] = [
   {
     id: 1,
-    animation: require("@/assets/animated/characters.json"),
+    animation: require("@/assets/animated/Characters.json"),
     text: "Start Your Adventure With a Look at New Books",
     textColor: '#60230b',
     backgroundColor: '#e098a9'
