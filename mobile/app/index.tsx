@@ -13,6 +13,15 @@ export default function Index() {
     checkOnboarding();
   }, []);
 
+  /*
+    TODO:
+    1 - create liner gradient for circle onboarding
+    2 - append a new fonts
+    3 - think about the colors for onboarding
+    ------------
+    4 - create a new screen witch choice themes
+  */
+
   const checkOnboarding = async () => {
     const value = await AsyncStorage.getItem("onboarding");
 

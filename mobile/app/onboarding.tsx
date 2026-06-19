@@ -10,6 +10,7 @@ import Animated, {
 import RenderItem from "@/app/components/RenderItem";
 import slider, { OnboardingData } from "@/service/options/OnboardingService";
 import Pagination from "@/app/components/ui/Pagination";
+import OnboardingBottom from "./components/ui/OnboardingBottom";
 
 export default function Onboarding() {
   const finishOnboarding = async () => {
@@ -78,6 +79,12 @@ export default function Onboarding() {
       <View style={styles.bottomContainer}>
         {/* pass data and x to pagination */}
         <Pagination slider={slider} x={x}/>
+        <OnboardingBottom
+          flatListRef={flatListRef}
+          flatListIndex={flatListIndex}
+          sliderLength={slider.length}
+          x={x}
+        />
       </View>
     </View>
   );
@@ -94,5 +101,8 @@ const styles = StyleSheet.create({
     right: 0,
     marginHorizontal: 30,
     paddingVertical: 30,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
   }
 });
