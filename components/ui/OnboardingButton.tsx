@@ -9,6 +9,7 @@ import Animated, {
 } from "react-native-reanimated";
 import { OnboardingData } from "@/service/options/OnboardingService";
 import { ChevronRight } from "lucide-react-native";
+import { router } from "expo-router";
 
 interface ButtonProps {
   sliderLength: number;
@@ -91,7 +92,7 @@ export default function OnboardingBottom({
      * @returns {number}
      */
     if (flatListIndex.value === sliderLength - 1) {
-      console.log("Get started");
+      router.replace("/");
       return;
     } else {
       flatListRef?.current?.scrollToIndex({
@@ -126,7 +127,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     fontWeight: '600',
     fontSize: 20,
-    // fontFamily: "SF Compact Rounded"
+    fontFamily: "SF Compact Rounded"
   },
   iconStyle: {
     width: 24,

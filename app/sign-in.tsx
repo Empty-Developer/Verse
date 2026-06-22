@@ -3,7 +3,7 @@ import { Redirect } from "expo-router";
 import { useEffect, useState } from "react";
 import { ActivityIndicator, StyleSheet, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import Button from "./components/ui/Button";
+import Button from "@/components/ui/Button";
 
 export default function Index() {
   const [loading, setLoading] = useState(true);

@@ -93,6 +93,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     marginBottom: 10,
     marginHorizontal: 20,
+    fontFamily: "SF Compact Rounded"
   },
   circleContainer: {
     ...StyleSheet.absoluteFillObject,
