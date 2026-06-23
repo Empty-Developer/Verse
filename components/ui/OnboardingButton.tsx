@@ -10,6 +10,7 @@ import Animated, {
 import { OnboardingData } from "@/service/options/OnboardingService";
 import { ChevronRight } from "lucide-react-native";
 import { router } from "expo-router";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 interface ButtonProps {
   sliderLength: number;
@@ -83,7 +84,7 @@ export default function OnboardingBottom({
   //     console.log("navigate to nest screen");
   //   }
   // };
-  const onPress = useCallback(() => {
+  const onPress = useCallback(async () => {
     /**
      * @description this function go the next index
      * but if is already at the last index
@@ -92,7 +93,9 @@ export default function OnboardingBottom({
      * @returns {number}
      */
     if (flatListIndex.value === sliderLength - 1) {
-      router.replace("/");
+      await AsyncStorage.setItem("onboarding", "true");
+
+      router.replace("/sign-in");
       return;
     } else {
       flatListRef?.current?.scrollToIndex({
