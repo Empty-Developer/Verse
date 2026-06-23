@@ -7,10 +7,10 @@ import Animated, {
   useAnimatedScrollHandler,
   useSharedValue,
 } from "react-native-reanimated";
-import RenderItem from "@/app/components/RenderItem";
+import RenderItem from "@/components/RenderItem";
 import slider, { OnboardingData } from "@/service/options/OnboardingService";
-import Pagination from "@/app/components/ui/Pagination";
-import OnboardingBottom from "./components/ui/OnboardingButtom";
+import Pagination from "@/components/ui/Pagination";
+import OnboardingBottom from "@/components/ui/OnboardingButton";
 
 export default function Onboarding() {
   const finishOnboarding = async () => {
