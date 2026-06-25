@@ -21,9 +21,9 @@ export default function Registration() {
 
     try {
       setLoading(true)
-      await register(username, email, password)
+      await register(email, password, username)
     } catch (error) {
-      Alert.alert("Error", "Error program")
+      console.log(error)
     } finally {
       setLoading(false)
     }

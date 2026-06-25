@@ -35,6 +35,11 @@ export const useAuthStore = create<AuthStore>()(
             password,
           });
 
+          if (error) {
+            console.log("LOGIN ERROR:", error);
+            throw error;
+          }
+
           if (data && data.user && !error) {
             const { user } = data;
 
@@ -66,6 +71,11 @@ export const useAuthStore = create<AuthStore>()(
               },
             },
           });
+
+          if (error) {
+            console.log("REGISTER ERROR:", error);
+            throw error;
+          }
 
           if (data && data.user && !error) {
             const { user } = data;
