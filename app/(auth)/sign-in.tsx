@@ -3,6 +3,7 @@ import React, { useState } from 'react'
 import LinearGradient from 'react-native-linear-gradient';
 import Button from '@/components/ui/Button';
 import Input from '@/components/ui/Input';
+import { Link } from 'expo-router';
 
 export default function SigIn() {
   const [email, setEmail] = useState('')
@@ -43,7 +44,20 @@ export default function SigIn() {
           fontFamily: "SF Compact Rounded",
         }}
       />
-      {/* <View>
+      <View style={styles.footer}>
+        <Text style={styles.footerText}>Don't have an account? </Text>
+        <Link href={'/registration'}>
+         <Text style={styles.linkText}>
+            Sign Up
+         </Text>
+        </Link>
+      </View>
+      {/* <View style={{display: 'flex', flexDirection: 'row', justifyContent: 'center', paddingVertical: 20,}}>
+        <View style={styles.lineOr}></View>
+        <Text>Or Log in with</Text>
+        <View style={styles.lineOr}></View>
+      </View>
+      <View style={{display: 'flex', flexDirection: 'row', justifyContent: 'center'}}>
         <Button
           title='Sign in Google'
         />
@@ -70,13 +84,13 @@ const styles = StyleSheet.create({
   },
   titleStyle: {
     fontWeight: '600',
-    fontSize: 40,
+    fontSize: 36,
     fontFamily: "SF Compact Rounded",
     textAlign: 'center',
   },
   descriptionStyle: {
     fontWeight: '400',
-    fontSize: 20,
+    fontSize: 18,
     textAlign: 'center',
     padding: '4%'
   },
@@ -88,5 +102,27 @@ const styles = StyleSheet.create({
   button: {
     borderRadius: 50,
     margin: 12
+  },
+  lineOr: {
+    borderColor: "#000",
+    borderWidth: 0.5,
+    paddingHorizontal: 60,
+    margin: 12,
+    left: 0,
+    right: 0,
+    top: 0,
+  },
+  footer: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    marginTop: 20,
+  },
+  footerText: {
+    fontSize: 17,
+    color: "#575656ff"
+  },
+  linkText: {
+    fontSize: 17,
+    fontWeight: '500',
   }
 })
