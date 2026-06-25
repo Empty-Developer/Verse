@@ -9,7 +9,7 @@ const Input = ({style, ...props}: InputProps) => {
   return (
     <TextInput
       {...props}
-      placeholderTextColor="#999"
+      placeholderTextColor="#706f6fff"
       style={[styles.inputStyle, style]}
     />
   )
@@ -17,12 +17,12 @@ const Input = ({style, ...props}: InputProps) => {
 
 const styles = StyleSheet.create({
   inputStyle: {
-    height: 40,
+    height: 50,
     margin: 12,
     borderWidth: 1,
-    borderColor: "#333",
+    borderColor: "#acacacff",
     padding: 10,
-    width: "80%"
+    // width: "100%"
   }
 })
 
