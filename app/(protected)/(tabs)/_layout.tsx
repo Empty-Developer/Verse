@@ -1,10 +1,19 @@
-import { Tabs } from "expo-router";
+import { NativeTabs, Icon, Label } from 'expo-router/unstable-native-tabs';
 
-export default function TabsLayout() {
+export default function TabLayout() {
   return (
-    <Tabs screenOptions={{ headerShown: false }}>
-      <Tabs.Screen name="index" />
-      <Tabs.Screen name="settings" />
-    </Tabs>
-  )
+    <NativeTabs>
+      <NativeTabs.Trigger name="index">
+        <Label>Home</Label>
+        <Icon sf="house.fill" drawable="md-main" selectedColor={"#6e6a6aff"}/>
+      </NativeTabs.Trigger>
+      <NativeTabs.Trigger name="profile">
+        <Icon sf="person.fill" drawable="md-person" selectedColor={'#6e6a6aff'}/>
+        <Label>Profile</Label>
+      </NativeTabs.Trigger>
+      {/* <NativeTabs.Trigger name="search" role='search'>
+        <Label>Search</Label>
+      </NativeTabs.Trigger> */}
+    </NativeTabs>
+  );
 }
