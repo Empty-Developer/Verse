@@ -1,10 +1,10 @@
 import { StyleSheet, Text, View } from 'react-native'
 import React from 'react'
 
-export default function Search() {
+export default function CreatePost() {
   return (
     <View>
-      <Text>Search</Text>
+      <Text>CreatePost</Text>
     </View>
   )
 }
