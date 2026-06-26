@@ -39,7 +39,7 @@ export default function Index() {
   if (!completed) {
     return <Redirect href="/onboarding" />;
   }
-  return <Redirect href="/sign-in" />;
+  return <Redirect href="/(auth)/sign-in" />;
 }
 
 const styles = StyleSheet.create({
