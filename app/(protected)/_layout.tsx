@@ -11,6 +11,8 @@ export default function ProtectedLayout() {
   return (
     <Stack screenOptions={{ headerShown: false }}>
       <Stack.Screen name="(tabs)"/>
+      <Stack.Screen name="create-post" />
+      <Stack.Screen name="like" />
     </Stack>
   )
 }

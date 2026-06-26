@@ -1,6 +1,14 @@
+import { Stack } from 'expo-router';
 import { NativeTabs, Icon, Label } from 'expo-router/unstable-native-tabs';
 
 export default function TabLayout() {
+  // return (
+  //   <Stack>
+  //     <Stack.Screen name="/like"/>
+  //     <Stack.Screen name="/index"/>
+  //     <Stack.Screen name="/create-post"/>
+  //   </Stack>
+  // )
   return (
     <NativeTabs>
       <NativeTabs.Trigger name="index">
