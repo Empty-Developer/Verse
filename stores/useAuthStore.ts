@@ -14,6 +14,7 @@ type AuthStore = {
     username: string,
   ) => Promise<void>;
   logout: () => Promise<void>;
+  profileImage?: boolean;
 };
 
 /**
