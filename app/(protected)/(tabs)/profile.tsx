@@ -3,37 +3,53 @@ import React, { useEffect, useState } from "react";
 import * as ImagePicker from "expo-image-picker";
 import { uploadProfileBackground, uploadProfileImage } from "@/lib/storage";
 import { supabase } from "@/lib/supabase";
+import { PencilLine } from "lucide-react-native";
 
-export default function SettingsScreen() {
+export default function UserScreen() {
   const [profileImage, setProfileImage] = useState<string | null>(null);
-  const [backgroundImage, setBackgroundImage] = useState<string | null>(null)
+  const [backgroundImage, setBackgroundImage] = useState<string | null>(null);
 
   /**
-   * @description this feature is located in the
-   * user folder and allows the user to upload a
-   * profile picture
-   * @returns {string}
+   * @description opens the device gallery, lets
+   * the user select an image,
+   * uploads it to supabase storage, updates
+   * the corresponding profile field,
+   * and refreshes the local image state
+   * @param {Aspect} aspect - image crop ratio used by the image picker
+   * @param {Function} upload - function responsible for uploading the selected image to storage
+   * @param {"avatar_url" | "background_url"} column - profile column to update in the database
+   * @param {React.Dispatch<React.SetStateAction<string | null>>} setImage - react state setter used to update the displayed image
+   * @returns {Promise<void>}
    */
-  const pickImage = async () => {
+  const updateImage = async ({
+    aspect,
+    upload,
+    column,
+    setImage,
+  }: {
+    aspect: [number, number];
+    upload: (userId: string, uri: string) => Promise<string>;
+    column: "avatar_url" | "background_url";
+    setImage: React.Dispatch<React.SetStateAction<string | null>>;
+  }) => {
     const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+
     if (status !== "granted") {
-      console.log("error");
+      console.log("Permission denied");
       return;
     }
 
     const result = await ImagePicker.launchImageLibraryAsync({
-      // settings
       mediaTypes: ["images"],
       allowsEditing: true,
-      aspect: [1, 1],
+      aspect,
       quality: 0.8,
     });
 
     if (result.canceled || !result.assets[0]) return;
 
     const imageUri = result.assets[0].uri;
-
-    setProfileImage(imageUri);
+    setImage(imageUri);
 
     try {
       const {
@@ -42,144 +58,82 @@ export default function SettingsScreen() {
 
       if (!user) return;
 
-      // upload in storage
-      const publicUrl = await uploadProfileImage(user.id, imageUri);
+      const publicUrl = await upload(user.id, imageUri);
 
       await supabase
         .from("profiles")
         .update({
-          avatar_url: publicUrl,
+          [column]: publicUrl,
         })
         .eq("id", user.id);
 
-      console.log("Avatar uploaded:", publicUrl);
-    } catch (error) {
-      console.error(error);
-    }
-  };
+      setImage(publicUrl);
 
-  const pickImageBackground = async () => {
-    const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
-    if (status !== "granted") {
-      console.log("error");
-      return;
-    }
-
-    const result = await ImagePicker.launchImageLibraryAsync({
-      // settings
-      mediaTypes: ["images"],
-      allowsEditing: true,
-      aspect: [16, 9],
-      quality: 0.8,
-    });
-
-    if (result.canceled || !result.assets[0]) return;
-
-    const imageUri = result.assets[0].uri;
-
-    setBackgroundImage(imageUri);
-
-    try {
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
-
-      if (!user) return;
-
-      // upload in storage
-      const publicUrl = await uploadProfileBackground(user.id, imageUri);
-
-      await supabase
-        .from("profiles")
-        .update({
-          background_url: publicUrl,
-        })
-        .eq("id", user.id);
-
-      console.log("Background uploaded:", publicUrl);
-    } catch (error) {
-      console.error(error);
-    }
-  };
-
-  /**
-   * @description this function sends a
-   * request to the user table and
-   * retrieves only the avatar
-   * photo from there
-   * @returns {string}
-   */
-  const loadProfileImage = async () => {
-    try {
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
-
-      if (!user) return;
-
-      const { data, error } = await supabase
-        /*
-          make a query to
-          the table
-        */
-        .from("profiles")
-        .select("avatar_url")
-        .eq("id", user.id)
-        .single();
-
-      if (error) throw error;
-
-      if (data?.avatar_url) {
-        setProfileImage(data.avatar_url);
-      }
-    } catch (error) {
-      console.error(error);
-    }
-  };
-
-  const loadProfileBackground = async () => {
-    try {
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
-
-      if (!user) return;
-
-      const { data, error } = await supabase
-        /*
-          make a query to
-          the table
-        */
-        .from("profiles")
-        .select("background_url")
-        .eq("id", user.id)
-        .single();
-
-      if (error) throw error;
-
-      if (data?.background_url) {
-        setBackgroundImage(data.background_url);
-      }
+      console.log(`${column} uploaded`);
     } catch (error) {
       console.error(error);
     }
   }
+
+  /**
+   * @description fetches the authenticated
+   * user profile from the `profiles`
+   * table and synchronizes the avatar
+   * and background images
+   * with the local react state
+   * @returns {Promise<void>}
+   */
+  const loadProfile = async () => {
+    try {
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+
+      if (!user) return;
+
+      const { data, error } = await supabase
+        .from("profiles")
+        .select("avatar_url, background_url")
+        .eq("id", user.id)
+        .single();
+
+
+      if (error) throw error;
+
+      if (data) {
+        setProfileImage(data.avatar_url ?? null);
+        setBackgroundImage(data.background_url ?? null);
+      }
+
+    } catch (error) {
+      console.error("Load profile error:", error);
+    }
+  };
+
   useEffect(() => {
-    loadProfileImage();
-    loadProfileBackground()
+    loadProfile();
   }, []);
 
   return (
     <View style={styles.container}>
+      {/* background image */}
       <TouchableOpacity
         style={styles.background}
-        onPress={pickImageBackground}
+        onPress={() =>
+          updateImage({
+            aspect: [16, 9],
+            upload: uploadProfileBackground,
+            column: "background_url",
+            setImage: setBackgroundImage,
+          })
+        }
       >
         {backgroundImage ? (
           <>
             <Image
               source={{ uri: backgroundImage }}
               style={styles.backgroundImage}
+              resizeMode="cover"
             />
 
             <View style={styles.overlay} />
@@ -190,7 +144,17 @@ export default function SettingsScreen() {
       </TouchableOpacity>
       {/* profile image */}
       <View style={styles.form}>
-        <TouchableOpacity style={styles.imageContainer} onPress={pickImage}>
+        <TouchableOpacity
+          style={styles.imageContainer}
+          onPress={() =>
+          updateImage({
+            aspect: [1, 1],
+            upload: uploadProfileImage,
+            column: "avatar_url",
+            setImage: setProfileImage,
+          })
+        }
+        >
           {profileImage ? (
             <Image
               source={{ uri: profileImage }} // take image from picker-expo
@@ -205,7 +169,7 @@ export default function SettingsScreen() {
             </View>
           )}
           <View style={styles.editBadge}>
-            <Text style={styles.editText}>Edit</Text>
+            <PencilLine color={"white"} />
           </View>
         </TouchableOpacity>
       </View>
@@ -245,20 +209,17 @@ const styles = StyleSheet.create({
     position: "absolute",
     bottom: 0,
     right: 0,
-    backgroundColor: "#171717ff",
+    backgroundColor: "#212020ff",
     paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 16,
-  },
-  editText: {
-    color: "white",
-    fontSize: 12,
-    fontWeight: "600",
+    paddingVertical: 12,
+    borderRadius: 50,
   },
   profileImage: {
     width: 160,
     height: 160,
     borderRadius: 100,
+    borderWidth: 4,
+    borderColor: "#ffffffff",
   },
   background: {
     width: "100%",
