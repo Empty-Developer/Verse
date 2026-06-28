@@ -49,3 +49,32 @@ export const uploadProfileImage = async (userId: string, imageUrl: string) => {
     throw error;
   }
 };
+
+export const uploadProfileBackground = async (userId: string, imageUrl: string) => {
+  try {
+    const fileExtension = imageUrl.split(".").pop() || "jpg";
+    const fileName = `${userId}/profile.${fileExtension}`;
+    const file = new File(imageUrl);
+    const bytes = await file.bytes();
+
+    const { error } = await supabase.storage
+        .from("background")
+        .upload(fileName, bytes, {
+          contentType: `image/${fileExtension}`,
+          // if user wont a new avatar image
+          upsert: true,
+        });
+
+    if (error) {
+      throw error;
+    }
+
+    const { data: urlData } = supabase.storage
+      .from("background")
+      .getPublicUrl(fileName);
+
+    return urlData.publicUrl;
+  } catch (error) {
+    throw error;
+  }
+}

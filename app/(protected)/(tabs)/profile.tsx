@@ -98,29 +98,31 @@ export default function SettingsScreen() {
   }, []);
 
   return (
-    <SafeAreaView style={styles.container}>
-      {/* profile image */}
-      <View style={styles.form}>
-        <TouchableOpacity style={styles.imageContainer} onPress={pickImage}>
-          {profileImage ? (
-            <Image
-              source={{ uri: profileImage }} // take image from picker-expo
-              style={styles.profileImage}
-            />
-          ) : (
-            <View style={styles.placeholderImage}>
+    <View style={styles.container}>
+      <View style={styles.background}>
+        {/* profile image */}
+        <View style={styles.form}>
+          <TouchableOpacity style={styles.imageContainer} onPress={pickImage}>
+            {profileImage ? (
               <Image
-                style={styles.image}
-                source={require("@/assets/images/user.png")}
+                source={{ uri: profileImage }} // take image from picker-expo
+                style={styles.profileImage}
               />
+            ) : (
+              <View style={styles.placeholderImage}>
+                <Image
+                  style={styles.image}
+                  source={require("@/assets/images/user.png")}
+                />
+              </View>
+            )}
+            <View style={styles.editBadge}>
+              <Text style={styles.editText}>Edit</Text>
             </View>
-          )}
-          <View style={styles.editBadge}>
-            <Text style={styles.editText}>Edit</Text>
-          </View>
-        </TouchableOpacity>
+          </TouchableOpacity>
+        </View>
       </View>
-    </SafeAreaView>
+    </View>
   );
 }
 
@@ -138,6 +140,7 @@ const styles = StyleSheet.create({
   },
   imageContainer: {
     marginBottom: 32,
+    marginTop: 100,
     position: "relative",
   },
   placeholderImage: {
@@ -170,4 +173,9 @@ const styles = StyleSheet.create({
     height: 160,
     borderRadius: 100,
   },
+  background: {
+    width: '100%',
+    height: '20%',
+    backgroundColor: '#333'
+  }
 });
