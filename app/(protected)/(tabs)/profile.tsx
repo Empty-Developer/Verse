@@ -4,6 +4,7 @@ import * as ImagePicker from "expo-image-picker";
 import { uploadProfileBackground, uploadProfileImage } from "@/lib/storage";
 import { supabase } from "@/lib/supabase";
 import { PencilLine } from "lucide-react-native";
+import Button from "@/components/ui/Button";
 
 export default function UserScreen() {
   const [profileImage, setProfileImage] = useState<string | null>(null);
@@ -73,7 +74,7 @@ export default function UserScreen() {
     } catch (error) {
       console.error(error);
     }
-  }
+  };
 
   /**
    * @description fetches the authenticated
@@ -97,21 +98,30 @@ export default function UserScreen() {
         .eq("id", user.id)
         .single();
 
-
       if (error) throw error;
 
       if (data) {
         setProfileImage(data.avatar_url ?? null);
         setBackgroundImage(data.background_url ?? null);
       }
-
     } catch (error) {
       console.error("Load profile error:", error);
     }
   };
 
+  // function take user name from supabase
+  const [username, setUsername] = useState('');
+  const takeUserName = async () => {
+    const {data: { user }} = await supabase.auth.getUser();
+
+    if (user) {
+      setUsername(user.user_metadata.username);
+    }
+  };
+
   useEffect(() => {
     loadProfile();
+    takeUserName()
   }, []);
 
   return (
@@ -147,13 +157,13 @@ export default function UserScreen() {
         <TouchableOpacity
           style={styles.imageContainer}
           onPress={() =>
-          updateImage({
-            aspect: [1, 1],
-            upload: uploadProfileImage,
-            column: "avatar_url",
-            setImage: setProfileImage,
-          })
-        }
+            updateImage({
+              aspect: [1, 1],
+              upload: uploadProfileImage,
+              column: "avatar_url",
+              setImage: setProfileImage,
+            })
+          }
         >
           {profileImage ? (
             <Image
@@ -172,6 +182,9 @@ export default function UserScreen() {
             <PencilLine color={"white"} />
           </View>
         </TouchableOpacity>
+      </View>
+      <View style={styles.container}>
+        <Text style={styles.userName}>{username}</Text>
       </View>
     </View>
   );
@@ -240,5 +253,11 @@ const styles = StyleSheet.create({
   overlay: {
     ...StyleSheet.absoluteFillObject,
     backgroundColor: "rgba(0,0,0,0.40)",
+  },
+  userName: {
+    textAlign: 'center',
+    fontWeight: 600,
+    fontSize: 34,
+    fontStyle: 'italic',
   },
 });
