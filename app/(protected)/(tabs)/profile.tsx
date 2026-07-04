@@ -1,14 +1,24 @@
-import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import {
+  Image,
+  Keyboard,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
+} from "react-native";
 import React, { useEffect, useState } from "react";
 import * as ImagePicker from "expo-image-picker";
 import { uploadProfileBackground, uploadProfileImage } from "@/lib/storage";
 import { supabase } from "@/lib/supabase";
 import { PencilLine } from "lucide-react-native";
-import Button from "@/components/ui/Button";
+import { getUserBio, updateUserBio } from "@/lib/bio-user";
 
 export default function UserScreen() {
   const [profileImage, setProfileImage] = useState<string | null>(null);
   const [backgroundImage, setBackgroundImage] = useState<string | null>(null);
+  const [bio, setBio] = useState("");
+  const [editingBio, setEditingBio] = useState(false);
 
   /**
    * @description opens the device gallery, lets
@@ -110,18 +120,31 @@ export default function UserScreen() {
   };
 
   // function take user name from supabase
-  const [username, setUsername] = useState('');
+  const [username, setUsername] = useState("");
   const takeUserName = async () => {
-    const {data: { user }} = await supabase.auth.getUser();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
 
     if (user) {
       setUsername(user.user_metadata.username);
     }
   };
 
+  // function for upload bio user
+  const loadBio = async () => {
+    try {
+      const text = await getUserBio();
+      setBio(text);
+    } catch (e) {
+      console.log(e);
+    }
+  };
+
   useEffect(() => {
     loadProfile();
-    takeUserName()
+    takeUserName();
+    loadBio();
   }, []);
 
   return (
@@ -184,7 +207,28 @@ export default function UserScreen() {
         </TouchableOpacity>
       </View>
       <View style={styles.container}>
+        {/* user name */}
         <Text style={styles.userName}>{username}</Text>
+        {/* user bio */}
+        {editingBio ? (
+          <TextInput
+            style={styles.bioInput}
+            multiline
+            value={bio}
+            onChangeText={setBio}
+            placeholder="Write something about yourself..."
+            onBlur={async () => {
+              Keyboard.dismiss();
+              await updateUserBio(bio);
+              setEditingBio(false);
+            }}
+            autoFocus
+          />
+        ) : (
+          <TouchableOpacity onPress={() => setEditingBio(true)}>
+            <Text style={styles.bio}>{bio || "Tap to add bio"}</Text>
+          </TouchableOpacity>
+        )}
       </View>
     </View>
   );
@@ -255,9 +299,26 @@ const styles = StyleSheet.create({
     backgroundColor: "rgba(0,0,0,0.40)",
   },
   userName: {
-    textAlign: 'center',
+    textAlign: "center",
     fontWeight: 600,
     fontSize: 34,
-    fontStyle: 'italic',
+  },
+  bio: {
+    marginTop: 12,
+    textAlign: "center",
+    color: "#666",
+    paddingHorizontal: 30,
+    fontSize: 16,
+    fontStyle: "italic",
+  },
+  bioInput: {
+    marginTop: 12,
+    borderWidth: 1,
+    borderColor: "#ccc",
+    borderRadius: 10,
+    padding: 12,
+    marginHorizontal: 30,
+    minHeight: 80,
+    textAlignVertical: "top",
   },
 });

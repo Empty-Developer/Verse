@@ -109,7 +109,7 @@ export const useAuthStore = create<AuthStore>()(
             isAuthenticated: false,
           })
         }
-      },
+      }
     }),
     {
       name: "auth-storage",
