@@ -1,12 +1,16 @@
 import { Image, StyleSheet, Text, View } from "react-native";
 import React from "react";
-import { Link } from "expo-router";
+import { Link, Redirect } from "expo-router";
 import { Heart, Plus } from "lucide-react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import Button from "@/components/ui/Button";
 import LottieView from "lottie-react-native";
+import { router } from "expo-router";
 
 export default function Main() {
+  const handlerBanner = () => {
+    router.push("/(protected)/(tabs)/library");
+  }
   return (
     <SafeAreaView style={styles.container}>
       {/* header */}
@@ -22,9 +26,14 @@ export default function Main() {
       {/* banner */}
       <View style={styles.banner}>
         <View style={{ flex: 1 }}>
-          <Text style={styles.textBanner}>Get inspired by your idols</Text>
+          <Text style={styles.textBanner}>Check out our library</Text>
 
-          <Button title="Start" style={styles.buttonBanner} />
+          <Button
+            title="Let's go"
+            style={styles.buttonBanner}
+            textStyle={styles.textButtonBanner}
+            onPress={handlerBanner}
+          />
         </View>
 
         <LottieView
@@ -62,7 +71,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    margin: 20
+    margin: 20,
   },
   bannerImageComponents: {
     position: "absolute",
@@ -85,10 +94,14 @@ const styles = StyleSheet.create({
     marginTop: 12,
     alignSelf: "flex-start",
     borderRadius: 20,
-    paddingHorizontal: 50
+    paddingHorizontal: 50,
   },
   animation: {
     width: 160,
     height: 160,
+  },
+  textButtonBanner: {
+    fontFamily: "SF Compact Rounded",
+    fontSize: 17,
   },
 });
