@@ -33,12 +33,12 @@ const screenWidth = Dimensions.get("window").width;
  */
 export default function Library() {
   const [books, setBooks] = useState<Book[]>([]);
+  const [search, setSearch] = useState("");
+
   useEffect(() => {
     async function load() {
       try {
         const data = await getBooks();
-
-        console.log("Books:", data);
         setBooks(data);
       } catch (error) {
         console.log(error);
@@ -48,29 +48,40 @@ export default function Library() {
     load();
   }, []);
 
+  /**
+   * @description this function working this
+   * if user write "cap" function take - "captain"
+   * includes(cap) - true
+   */
+  const filteredBooks = books.filter((book) =>
+    book.title.toLowerCase().includes(search.toLowerCase()),
+  );
+
   return (
     <SafeAreaView style={styles.container}>
-      <Search />
-      <FlatList
-        data={books}
-        keyExtractor={(item) => item.id.toString()}
-        numColumns={2}
-        showsVerticalScrollIndicator={false}
-        contentContainerStyle={styles.list}
-        columnWrapperStyle={styles.row}
-        renderItem={({ item }) => (
-          <View style={styles.card}>
-            <Image
-              source={{ uri: getCoverUrl(item.cover) }}
-              style={styles.cover}
-            />
+      <Search value={search} onChangeText={setSearch} />
+      <View style={{ paddingHorizontal: 20 }}>
+        <FlatList
+          data={filteredBooks}
+          keyExtractor={(item) => item.id.toString()}
+          numColumns={2}
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={styles.list}
+          columnWrapperStyle={styles.row}
+          renderItem={({ item }) => (
+            <View style={styles.card}>
+              <Image
+                source={{ uri: getCoverUrl(item.cover) }}
+                style={styles.cover}
+              />
 
-            <Text style={styles.title} numberOfLines={1}>
-              {item.title}
-            </Text>
-          </View>
-        )}
-      />
+              <Text style={styles.title} numberOfLines={1}>
+                {item.title}
+              </Text>
+            </View>
+          )}
+        />
+      </View>
     </SafeAreaView>
   );
 }
@@ -79,6 +90,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     paddingHorizontal: 20,
+    marginBottom: 120,
   },
 
   list: {
@@ -88,7 +100,7 @@ const styles = StyleSheet.create({
 
   row: {
     justifyContent: "space-between",
-    marginBottom: 12,
+    marginBottom: 26,
   },
 
   card: {
