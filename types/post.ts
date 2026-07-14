@@ -1,4 +1,4 @@
-export interface Book {
+export interface Post {
   id: number;
   title: string;
   file: string;
