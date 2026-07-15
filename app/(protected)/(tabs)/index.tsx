@@ -1,6 +1,6 @@
 import { FlatList, Image, StyleSheet, Text, View } from "react-native";
 import React, { useEffect, useState } from "react";
-import { Link, Redirect } from "expo-router";
+import { Link } from "expo-router";
 import { Heart, Plus } from "lucide-react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import Button from "@/components/ui/Button";
@@ -9,12 +9,49 @@ import { router } from "expo-router";
 import { getPosts, getCoverUrl } from "@/lib/posts";
 import { Post } from "@/types/post";
 import PostImage from "@/components/ui/ImagePost";
+import { supabase } from "@/lib/supabase";
 
 export default function Main() {
+  const [profileImage, setProfileImage] = useState<string | null>(null);
   const [posts, setPosts] = useState<Post[]>([]);
 
   const handlerBanner = () => {
     router.push("/(protected)/(tabs)/library");
+  };
+
+  const loadProfile = async () => {
+    try {
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+
+      if (!user) return;
+
+      const { data, error } = await supabase
+        .from("profiles")
+        .select("avatar_url, background_url")
+        .eq("id", user.id)
+        .single();
+
+      if (error) throw error;
+
+      if (data) {
+        setProfileImage(data.avatar_url ?? null);
+      }
+    } catch (error) {
+      console.error("Load profile error:", error);
+    }
+  };
+
+  const [username, setUsername] = useState("");
+  const takeUserName = async () => {
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
+    if (user) {
+      setUsername(user.user_metadata.username);
+    }
   };
 
   useEffect(() => {
@@ -28,6 +65,8 @@ export default function Main() {
     }
 
     load();
+    loadProfile();
+    takeUserName()
   }, []);
 
   return (
@@ -72,7 +111,25 @@ export default function Main() {
           }
           renderItem={({ item }) => (
             <View style={styles.card}>
-              <Text style={styles.title}>{item.title}</Text>
+              <View style={styles.postHeader}>
+                {profileImage ? (
+                  <Image
+                    source={{ uri: profileImage }}
+                    style={styles.profileImage}
+                  />
+                ) : (
+                  <View style={styles.placeholderImage}>
+                    <Image
+                      style={styles.image}
+                      source={require("@/assets/images/user.png")}
+                    />
+                  </View>
+                )}
+                <View style={styles.titleContainer}>
+                  <Text style={styles.nameText}>{username}</Text>
+                  <Text style={styles.title}>{item.title}</Text>
+                </View>
+              </View>
               <PostImage uri={getCoverUrl(item.cover)} />
             </View>
           )}
@@ -139,32 +196,55 @@ const styles = StyleSheet.create({
     fontFamily: "SF Compact Rounded",
     fontSize: 17,
   },
-
   list: {
     paddingHorizontal: 5,
     paddingBottom: 40,
   },
-
   row: {
     justifyContent: "space-between",
     marginBottom: 26,
   },
-
   card: {
     marginBottom: 24,
   },
-
   title: {
     fontSize: 18,
-    fontWeight: "600",
-    marginBottom: 10,
-    paddingHorizontal: 4,
+    fontWeight: "400",
+    flexShrink: 1,
+    flexWrap: "wrap",
   },
-
   cover: {
     width: "100%",
     height: 230,
     borderRadius: 18,
     resizeMode: "cover",
   },
+  image: {
+    width: 60,
+    height: 60,
+  },
+  placeholderImage: {
+    width: 60,
+    height: 60,
+    borderRadius: 100,
+  },
+  profileImage: {
+    width: 60,
+    height: 60,
+    borderRadius: 100,
+  },
+  postHeader: {
+    flexDirection: "row",
+    marginBottom: 16,
+  },
+  titleContainer: {
+    flex: 1,
+    marginLeft: 12,
+    minWidth: 0,
+  },
+  nameText: {
+    fontSize: 18,
+    fontWeight: "600",
+    flexShrink: 1,
+  }
 });
