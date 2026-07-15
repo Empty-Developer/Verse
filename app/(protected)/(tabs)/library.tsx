@@ -12,7 +12,6 @@ import Search from "@/components/ui/Search";
 import { getBooks, getCoverUrl } from "@/lib/books";
 import { Book } from "@/types/book";
 
-const screenWidth = Dimensions.get("window").width;
 /**
  * @description
  * library screen that displays a grid of books fetched from supabase
