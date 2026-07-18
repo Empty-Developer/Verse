@@ -23,6 +23,9 @@ import * as ImagePicker from "expo-image-picker";
 export default function Main() {
   const [profileImage, setProfileImage] = useState<string | null>(null);
   const [posts, setPosts] = useState<Post[]>([]);
+  // post editor or how create post
+  const [showPreview, setShowPreview] = useState(false);
+  const [previewImage, setPreviewImage] = useState<string | null>(null);
 
   const handlerBanner = () => {
     router.push("/(protected)/(tabs)/library");
@@ -79,13 +82,14 @@ export default function Main() {
   }, []);
 
   /**
-   * 
-   * @returns 
+   *
+   * @returns
    */
   const pickImage = async () => {
     const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+
     if (status !== "granted") {
-      Alert.alert("...");
+      console.log("Permission denied");
       return;
     }
 
@@ -97,15 +101,43 @@ export default function Main() {
     });
 
     if (result.canceled || !result.assets[0]) return;
+
+    const imageUri = result.assets[0].uri;
+
+    setPreviewImage(imageUri);
+    // setShowPreview(true);
+
+    try {
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+
+      if (!user) return;
+
+      // const publicUrl = await uploadCover(user.id, imageUri);
+      const publicUrl = imageUri;
+
+      await supabase
+        .from("posts")
+        .insert({
+          user_id: user.id,
+          cover: publicUrl,
+          title: "",
+        })
+        .select()
+        .single();
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   /**
-   * 
+   *
    */
   const takePhoto = async () => {
     const { status } = await ImagePicker.requestCameraPermissionsAsync();
     if (status !== "granted") {
-      Alert.alert("...");
+      console.log("Permission denied");
       return;
     }
 
@@ -116,10 +148,38 @@ export default function Main() {
     });
 
     if (result.canceled || !result.assets[0]) return;
-  }
+
+    const imageUri = result.assets[0].uri;
+
+    setPreviewImage(imageUri);
+    // setShowPreview(true);
+
+    try {
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+
+      if (!user) return;
+
+      // const publicUrl = await uploadCover(user.id, imageUri);
+      const publicUrl = imageUri;
+
+      await supabase
+        .from("posts")
+        .insert({
+          user_id: user.id,
+          cover: publicUrl,
+          title: "",
+        })
+        .select()
+        .single();
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   /**
-   * 
+   *
    */
   const showImagePicker = () => {
     Alert.alert("Select Post Image", "Choose an option", [
