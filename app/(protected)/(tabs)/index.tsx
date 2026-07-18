@@ -28,7 +28,7 @@ export default function Main() {
   // post editor or how create post
   const [showPreview, setShowPreview] = useState(false);
   const [previewImage, setPreviewImage] = useState<string | null>(null);
-  const [description, setDescription] = useState<string>("") // supa - title
+  const [description, setDescription] = useState<string>(""); // supa - title
 
   const handlerBanner = () => {
     router.push("/(protected)/(tabs)/library");
@@ -109,6 +109,7 @@ export default function Main() {
 
     setPreviewImage(imageUri);
     setShowPreview(true);
+    setDescription('')
 
     try {
       const {
@@ -156,6 +157,7 @@ export default function Main() {
 
     setPreviewImage(imageUri);
     setShowPreview(true);
+    setDescription('')
 
     try {
       const {
@@ -259,32 +261,44 @@ export default function Main() {
         />
       </View>
       <Modal visible={showPreview} transparent animationType="fade">
-          <View style={styles.modalContainer}>
-            <View style={styles.modalContent}>
-              <Text style={styles.modalTitle}>Preview Your Post</Text>
-              {previewImage && (
-                <Image style={styles.previewImage} source={{uri: previewImage}}/>
-              )}
-              <TextInput
-                style={styles.descriptionInput}
-                placeholder="Add a description..."
-                placeholderTextColor={'#999'}
-                value={description}
-                onChangeText={setDescription}
-                multiline
-                maxLength={500}
-                textAlignVertical="top"
+        <View style={styles.modalContainer}>
+          <View style={styles.modalContent}>
+            <Text style={styles.modalTitle}>Preview Your Post</Text>
+            {previewImage && (
+              <Image
+                style={styles.previewImage}
+                source={{ uri: previewImage }}
               />
-              <View style={styles.modalButtons}>
-                <TouchableOpacity style={[styles.modalButton, styles.cancelButton]}>
-                  <Text style={styles.cancelButtonText}>Cancel</Text>
-                </TouchableOpacity>
-                <TouchableOpacity style={[styles.modalButton, styles.postButton]}>
-                  <Text style={styles.postButtonText}>Post</Text>
-                </TouchableOpacity>
-              </View>
+            )}
+            <TextInput
+              style={styles.descriptionInput}
+              placeholder="Add a description..."
+              placeholderTextColor={"#999"}
+              value={description}
+              onChangeText={setDescription}
+              multiline
+              maxLength={500}
+              textAlignVertical="top"
+            />
+            <View style={styles.modalButtons}>
+              <Button
+                style={[styles.modalButton, styles.cancelButton]}
+                textStyle={styles.cancelButtonText}
+                title="Cancel"
+                onPress={() => {
+                  setShowPreview(false)
+                  setPreviewImage(null)
+                  setDescription('')
+                }}
+              />
+              <Button
+                title="Post"
+                style={[styles.modalButton, styles.postButton]}
+                textStyle={styles.postButtonText}
+              />
             </View>
           </View>
+        </View>
       </Modal>
     </SafeAreaView>
   );
@@ -402,71 +416,69 @@ const styles = StyleSheet.create({
   // modal
   modalContainer: {
     flex: 1,
-    backgroundColor: 'rgba(0,0,0,0.7)',
-    justifyContent: 'center',
-    alignItems: 'center',
+    backgroundColor: "rgba(0,0,0,0.7)",
+    justifyContent: "center",
+    alignItems: "center",
     padding: 24,
   },
   modalContent: {
-    backgroundColor: '#fff',
+    backgroundColor: "#fff",
     borderRadius: 18,
     padding: 24,
-    width: '100%',
+    width: "100%",
     maxWidth: 400,
   },
   modalTitle: {
     fontSize: 20,
     fontWeight: 600,
     marginBottom: 16,
-    textAlign: 'center',
+    textAlign: "center",
     fontFamily: "SF Compact Rounded",
   },
   previewImage: {
-    width: '100%',
+    width: "100%",
     aspectRatio: 1,
     borderRadius: 12,
     marginBottom: 16,
   },
   descriptionInput: {
-    width: '100%',
+    width: "100%",
     minHeight: 80,
     maxHeight: 120,
-    backgroundColor: '#f5f5f5',
+    backgroundColor: "#f5f5f5",
     borderRadius: 12,
     padding: 12,
     fontSize: 16,
     marginBottom: 24,
     borderWidth: 1,
-    borderColor: '#e0e0e0',
-    color: '#000',
+    borderColor: "#e0e0e0",
+    color: "#000",
   },
   modalButtons: {
-    flexDirection: 'row',
-    gap: 12
+    flexDirection: "row",
+    gap: 12,
   },
   modalButton: {
     flex: 1,
     padding: 16,
     borderRadius: 18,
-    alignItems: 'center',
+    alignItems: "center",
   },
-  modalButtonText: {
-
-  },
+  modalButtonText: {},
   postButton: {
-    backgroundColor: '#000'
+    backgroundColor: "#000",
   },
   postButtonText: {
-    color: 'white',
+    color: "white",
     fontSize: 16,
-    fontWeight: 600
+    fontWeight: 600,
   },
   cancelButtonText: {
-    color: 'black',
+    color: "black",
     fontSize: 16,
-    fontWeight: 600
+    fontWeight: 600,
   },
   cancelButton: {
-    backgroundColor: '#f5f5f5'
-  }
+    backgroundColor: "#f5f5f5",
+  },
 });
