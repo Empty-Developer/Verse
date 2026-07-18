@@ -1,4 +1,12 @@
-import { FlatList, Image, StyleSheet, Text, View } from "react-native";
+import {
+  Alert,
+  FlatList,
+  Image,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
 import React, { useEffect, useState } from "react";
 import { Link } from "expo-router";
 import { Heart, Plus } from "lucide-react-native";
@@ -10,6 +18,7 @@ import { getPosts, getCoverUrl } from "@/lib/posts";
 import { Post } from "@/types/post";
 import PostImage from "@/components/ui/ImagePost";
 import { supabase } from "@/lib/supabase";
+import * as ImagePicker from "expo-image-picker";
 
 export default function Main() {
   const [profileImage, setProfileImage] = useState<string | null>(null);
@@ -66,16 +75,67 @@ export default function Main() {
 
     load();
     loadProfile();
-    takeUserName()
+    takeUserName();
   }, []);
+
+  /**
+   * 
+   * @returns 
+   */
+  const pickImage = async () => {
+    const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+    if (status !== "granted") {
+      Alert.alert("...");
+      return;
+    }
+
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ["images"],
+      allowsEditing: true,
+      aspect: [1, 1],
+      quality: 0.8,
+    });
+
+    if (result.canceled || !result.assets[0]) return;
+  };
+
+  /**
+   * 
+   */
+  const takePhoto = async () => {
+    const { status } = await ImagePicker.requestCameraPermissionsAsync();
+    if (status !== "granted") {
+      Alert.alert("...");
+      return;
+    }
+
+    const result = await ImagePicker.launchCameraAsync({
+      allowsEditing: true,
+      aspect: [1, 1],
+      quality: 0.8,
+    });
+
+    if (result.canceled || !result.assets[0]) return;
+  }
+
+  /**
+   * 
+   */
+  const showImagePicker = () => {
+    Alert.alert("Select Post Image", "Choose an option", [
+      { text: "Camera", onPress: takePhoto },
+      { text: "Photo Library", onPress: pickImage },
+      { text: "Cancel", style: "cancel" },
+    ]);
+  };
 
   return (
     <SafeAreaView style={styles.container}>
       {/* header */}
       <View style={styles.header}>
-        <Link href={"/(protected)/create-post"}>
+        <TouchableOpacity onPress={showImagePicker}>
           <Plus />
-        </Link>
+        </TouchableOpacity>
         <Text style={styles.mainText}>Verse</Text>
         <Link href={"/(protected)/like"}>
           <Heart />
@@ -206,6 +266,7 @@ const styles = StyleSheet.create({
   },
   card: {
     marginBottom: 24,
+    marginTop: 12,
   },
   title: {
     fontSize: 18,
@@ -246,5 +307,5 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: "600",
     flexShrink: 1,
-  }
+  },
 });
