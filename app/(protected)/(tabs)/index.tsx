@@ -2,8 +2,10 @@ import {
   Alert,
   FlatList,
   Image,
+  Modal,
   StyleSheet,
   Text,
+  TextInput,
   TouchableOpacity,
   View,
 } from "react-native";
@@ -26,6 +28,7 @@ export default function Main() {
   // post editor or how create post
   const [showPreview, setShowPreview] = useState(false);
   const [previewImage, setPreviewImage] = useState<string | null>(null);
+  const [description, setDescription] = useState<string>("") // supa - title
 
   const handlerBanner = () => {
     router.push("/(protected)/(tabs)/library");
@@ -105,7 +108,7 @@ export default function Main() {
     const imageUri = result.assets[0].uri;
 
     setPreviewImage(imageUri);
-    // setShowPreview(true);
+    setShowPreview(true);
 
     try {
       const {
@@ -152,7 +155,7 @@ export default function Main() {
     const imageUri = result.assets[0].uri;
 
     setPreviewImage(imageUri);
-    // setShowPreview(true);
+    setShowPreview(true);
 
     try {
       const {
@@ -255,6 +258,34 @@ export default function Main() {
           )}
         />
       </View>
+      <Modal visible={showPreview} transparent animationType="fade">
+          <View style={styles.modalContainer}>
+            <View style={styles.modalContent}>
+              <Text style={styles.modalTitle}>Preview Your Post</Text>
+              {previewImage && (
+                <Image style={styles.previewImage} source={{uri: previewImage}}/>
+              )}
+              <TextInput
+                style={styles.descriptionInput}
+                placeholder="Add a description..."
+                placeholderTextColor={'#999'}
+                value={description}
+                onChangeText={setDescription}
+                multiline
+                maxLength={500}
+                textAlignVertical="top"
+              />
+              <View style={styles.modalButtons}>
+                <TouchableOpacity style={[styles.modalButton, styles.cancelButton]}>
+                  <Text style={styles.cancelButtonText}>Cancel</Text>
+                </TouchableOpacity>
+                <TouchableOpacity style={[styles.modalButton, styles.postButton]}>
+                  <Text style={styles.postButtonText}>Post</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          </View>
+      </Modal>
     </SafeAreaView>
   );
 }
@@ -368,4 +399,74 @@ const styles = StyleSheet.create({
     fontWeight: "600",
     flexShrink: 1,
   },
+  // modal
+  modalContainer: {
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.7)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 24,
+  },
+  modalContent: {
+    backgroundColor: '#fff',
+    borderRadius: 18,
+    padding: 24,
+    width: '100%',
+    maxWidth: 400,
+  },
+  modalTitle: {
+    fontSize: 20,
+    fontWeight: 600,
+    marginBottom: 16,
+    textAlign: 'center',
+    fontFamily: "SF Compact Rounded",
+  },
+  previewImage: {
+    width: '100%',
+    aspectRatio: 1,
+    borderRadius: 12,
+    marginBottom: 16,
+  },
+  descriptionInput: {
+    width: '100%',
+    minHeight: 80,
+    maxHeight: 120,
+    backgroundColor: '#f5f5f5',
+    borderRadius: 12,
+    padding: 12,
+    fontSize: 16,
+    marginBottom: 24,
+    borderWidth: 1,
+    borderColor: '#e0e0e0',
+    color: '#000',
+  },
+  modalButtons: {
+    flexDirection: 'row',
+    gap: 12
+  },
+  modalButton: {
+    flex: 1,
+    padding: 16,
+    borderRadius: 18,
+    alignItems: 'center',
+  },
+  modalButtonText: {
+
+  },
+  postButton: {
+    backgroundColor: '#000'
+  },
+  postButtonText: {
+    color: 'white',
+    fontSize: 16,
+    fontWeight: 600
+  },
+  cancelButtonText: {
+    color: 'black',
+    fontSize: 16,
+    fontWeight: 600
+  },
+  cancelButton: {
+    backgroundColor: '#f5f5f5'
+  }
 });
