@@ -22,10 +22,12 @@ import PostImage from "@/components/ui/ImagePost";
 import { supabase } from "@/lib/supabase";
 import * as ImagePicker from "expo-image-picker";
 import { usePost } from "@/hooks/usePosts";
+import { usePostStore } from "@/stores/usePostStore";
 
 export default function Main() {
   const [profileImage, setProfileImage] = useState<string | null>(null);
-  const [posts, setPosts] = useState<Post[]>([]);
+  const posts = usePostStore((state) => state.posts)
+  const setPosts = usePostStore((state) => state.setPosts)
   // post editor or how create post
   const [showPreview, setShowPreview] = useState(false);
   const [previewImage, setPreviewImage] = useState<string | null>(null);
@@ -73,7 +75,7 @@ export default function Main() {
   };
 
   useEffect(() => {
-    async function load() {
+    async function loadPosts() {
       try {
         const data = await getPosts();
         setPosts(data);
@@ -82,7 +84,7 @@ export default function Main() {
       }
     }
 
-    load();
+    loadPosts();
     loadProfile();
     takeUserName();
   }, []);

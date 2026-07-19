@@ -8,6 +8,7 @@
 import { uploadPostImage } from "@/lib/storage"
 import { supabase } from "@/lib/supabase";
 import { useAuthStore } from "@/stores/useAuthStore"
+import { usePostStore } from "@/stores/usePostStore";
 
 export const usePost = () => {
   const user = useAuthStore((state) => state.user);
@@ -31,7 +32,7 @@ export const usePost = () => {
       const expiresAt = new Date(now.getTime() + 24 * 60 * 60 * 1000)
 
       // check error
-      const {error} = await supabase
+      const { data, error } = await supabase
       .from('posts')
       .insert({
         user_id: user.id,
@@ -47,6 +48,8 @@ export const usePost = () => {
         console.log("error create post: ", error)
         throw error
       }
+      usePostStore.getState().addPost(data);
+
     } catch (error) {
       console.log("error in createPost: ", error)
       throw error
