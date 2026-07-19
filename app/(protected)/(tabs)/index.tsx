@@ -194,6 +194,10 @@ export default function Main() {
     ]);
   };
 
+  const handlerPost = async () => {
+
+  }
+
   return (
     <SafeAreaView style={styles.container}>
       {/* header */}
@@ -295,6 +299,7 @@ export default function Main() {
                 title="Post"
                 style={[styles.modalButton, styles.postButton]}
                 textStyle={styles.postButtonText}
+                onPress={handlerPost}
               />
             </View>
           </View>
@@ -464,7 +469,6 @@ const styles = StyleSheet.create({
     borderRadius: 18,
     alignItems: "center",
   },
-  modalButtonText: {},
   postButton: {
     backgroundColor: "#000",
   },

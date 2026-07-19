@@ -78,3 +78,43 @@ export const uploadProfileBackground = async (userId: string, imageUrl: string) 
     throw error;
   }
 }
+
+export const uploadPostImage = async (userId: string, imageUrl: string) => {
+  try {
+    // need get image extension
+    const fileExtension = imageUrl.split(".").pop() || "jpg";
+
+    // create name for file
+    const fileName = `${userId}/profile.${fileExtension}`;
+
+    const file = new File(imageUrl);
+    // create defined format img file
+    const bytes = await file.bytes();
+
+    // upload file
+    const { error } = await supabase.storage
+      .from("coverPost")
+      .upload(fileName, bytes, {
+        contentType: `image/${fileExtension}`,
+        // if user wont a new post image
+        upsert: true,
+      });
+
+    if (error) {
+      throw error;
+    }
+
+    /*
+      this will give a legal
+      address for public use
+    */
+    const { data: urlData } = supabase.storage
+      .from("coverPost")
+      .getPublicUrl(fileName);
+
+    return urlData.publicUrl;
+  } catch (error) {
+    console.error(error);
+    throw error;
+  }
+};
