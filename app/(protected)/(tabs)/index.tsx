@@ -88,8 +88,11 @@ export default function Main() {
   }, []);
 
   /**
-   *
-   * @returns
+   * @description fetches the authenticated
+   * user profile from the `posts`
+   * table and synchronizes the img-post
+   * with the local react state
+   * @returns {Promise<void>}
    */
   const pickImage = async () => {
     const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
@@ -139,7 +142,12 @@ export default function Main() {
   };
 
   /**
-   *
+   * @description fetches the authenticated
+   * user profile from the `posts`
+   * table and synchronizes the img-post
+   * with the local react state
+   * but now this depends on the photo he took
+   * @returns {Promise<void>}
    */
   const takePhoto = async () => {
     const { status } = await ImagePicker.requestCameraPermissionsAsync();
@@ -187,7 +195,8 @@ export default function Main() {
   };
 
   /**
-   *
+   * @description this function call ui layout
+   * where user can select Camera, Photo Library, Cancel
    */
   const showImagePicker = () => {
     Alert.alert("Select Post Image", "Choose an option", [
@@ -216,7 +225,7 @@ export default function Main() {
       {/* header */}
       <View style={styles.header}>
         <TouchableOpacity onPress={showImagePicker}>
-          <Plus style={{pointerEvents: "none",}}/>
+          <Plus style={{ pointerEvents: "none" }} />
         </TouchableOpacity>
         <Text style={styles.mainText}>Verse</Text>
         <Link href={"/(protected)/like"}>
