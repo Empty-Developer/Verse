@@ -21,6 +21,7 @@ import { Post } from "@/types/post";
 import PostImage from "@/components/ui/ImagePost";
 import { supabase } from "@/lib/supabase";
 import * as ImagePicker from "expo-image-picker";
+import { usePost } from "@/hooks/usePosts";
 
 export default function Main() {
   const [profileImage, setProfileImage] = useState<string | null>(null);
@@ -29,6 +30,8 @@ export default function Main() {
   const [showPreview, setShowPreview] = useState(false);
   const [previewImage, setPreviewImage] = useState<string | null>(null);
   const [description, setDescription] = useState<string>(""); // supa - title
+
+  const { createPost } = usePost();
 
   const handlerBanner = () => {
     router.push("/(protected)/(tabs)/library");
@@ -109,7 +112,7 @@ export default function Main() {
 
     setPreviewImage(imageUri);
     setShowPreview(true);
-    setDescription('')
+    setDescription("");
 
     try {
       const {
@@ -157,7 +160,7 @@ export default function Main() {
 
     setPreviewImage(imageUri);
     setShowPreview(true);
-    setDescription('')
+    setDescription("");
 
     try {
       const {
@@ -195,15 +198,25 @@ export default function Main() {
   };
 
   const handlerPost = async () => {
-
-  }
+    if (!previewImage) {
+      return;
+    }
+    try {
+      await createPost(previewImage, description);
+      setPreviewImage(null);
+      setDescription("");
+      setShowPreview(false);
+    } catch (error) {
+      console.log("error create post: ", error);
+    }
+  };
 
   return (
     <SafeAreaView style={styles.container}>
       {/* header */}
       <View style={styles.header}>
         <TouchableOpacity onPress={showImagePicker}>
-          <Plus />
+          <Plus style={{pointerEvents: "none",}}/>
         </TouchableOpacity>
         <Text style={styles.mainText}>Verse</Text>
         <Link href={"/(protected)/like"}>
@@ -290,9 +303,9 @@ export default function Main() {
                 textStyle={styles.cancelButtonText}
                 title="Cancel"
                 onPress={() => {
-                  setShowPreview(false)
-                  setPreviewImage(null)
-                  setDescription('')
+                  setShowPreview(false);
+                  setPreviewImage(null);
+                  setDescription("");
                 }}
               />
               <Button
