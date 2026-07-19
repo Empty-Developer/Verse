@@ -1,4 +1,14 @@
-import { FlatList, Image, StyleSheet, Text, View } from "react-native";
+import {
+  Alert,
+  FlatList,
+  Image,
+  Modal,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
+} from "react-native";
 import React, { useEffect, useState } from "react";
 import { Link } from "expo-router";
 import { Heart, Plus } from "lucide-react-native";
@@ -6,14 +16,24 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import Button from "@/components/ui/Button";
 import LottieView from "lottie-react-native";
 import { router } from "expo-router";
-import { getPosts, getCoverUrl } from "@/lib/posts";
+import { getPosts } from "@/lib/posts";
 import { Post } from "@/types/post";
 import PostImage from "@/components/ui/ImagePost";
 import { supabase } from "@/lib/supabase";
+import * as ImagePicker from "expo-image-picker";
+import { usePost } from "@/hooks/usePosts";
+import { usePostStore } from "@/stores/usePostStore";
 
 export default function Main() {
   const [profileImage, setProfileImage] = useState<string | null>(null);
-  const [posts, setPosts] = useState<Post[]>([]);
+  const posts = usePostStore((state) => state.posts)
+  const setPosts = usePostStore((state) => state.setPosts)
+  // post editor or how create post
+  const [showPreview, setShowPreview] = useState(false);
+  const [previewImage, setPreviewImage] = useState<string | null>(null);
+  const [description, setDescription] = useState<string>(""); // supa - title
+
+  const { createPost } = usePost();
 
   const handlerBanner = () => {
     router.push("/(protected)/(tabs)/library");
@@ -55,7 +75,7 @@ export default function Main() {
   };
 
   useEffect(() => {
-    async function load() {
+    async function loadPosts() {
       try {
         const data = await getPosts();
         setPosts(data);
@@ -64,18 +84,151 @@ export default function Main() {
       }
     }
 
-    load();
+    loadPosts();
     loadProfile();
-    takeUserName()
+    takeUserName();
   }, []);
+
+  /**
+   * @description fetches the authenticated
+   * user profile from the `posts`
+   * table and synchronizes the img-post
+   * with the local react state
+   * @returns {Promise<void>}
+   */
+  const pickImage = async () => {
+    const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+
+    if (status !== "granted") {
+      console.log("Permission denied");
+      return;
+    }
+
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ["images"],
+      allowsEditing: true,
+      aspect: [1, 1],
+      quality: 0.8,
+    });
+
+    if (result.canceled || !result.assets[0]) return;
+
+    const imageUri = result.assets[0].uri;
+
+    setPreviewImage(imageUri);
+    setShowPreview(true);
+    setDescription("");
+
+    try {
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+
+      if (!user) return;
+
+      // const publicUrl = await uploadCover(user.id, imageUri);
+      const publicUrl = imageUri;
+
+      await supabase
+        .from("posts")
+        .insert({
+          user_id: user.id,
+          cover: publicUrl,
+          title: "",
+        })
+        .select()
+        .single();
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  /**
+   * @description fetches the authenticated
+   * user profile from the `posts`
+   * table and synchronizes the img-post
+   * with the local react state
+   * but now this depends on the photo he took
+   * @returns {Promise<void>}
+   */
+  const takePhoto = async () => {
+    const { status } = await ImagePicker.requestCameraPermissionsAsync();
+    if (status !== "granted") {
+      console.log("Permission denied");
+      return;
+    }
+
+    const result = await ImagePicker.launchCameraAsync({
+      allowsEditing: true,
+      aspect: [1, 1],
+      quality: 0.8,
+    });
+
+    if (result.canceled || !result.assets[0]) return;
+
+    const imageUri = result.assets[0].uri;
+
+    setPreviewImage(imageUri);
+    setShowPreview(true);
+    setDescription("");
+
+    try {
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+
+      if (!user) return;
+
+      // const publicUrl = await uploadCover(user.id, imageUri);
+      const publicUrl = imageUri;
+
+      await supabase
+        .from("posts")
+        .insert({
+          user_id: user.id,
+          cover: publicUrl,
+          title: "",
+        })
+        .select()
+        .single();
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  /**
+   * @description this function call ui layout
+   * where user can select Camera, Photo Library, Cancel
+   */
+  const showImagePicker = () => {
+    Alert.alert("Select Post Image", "Choose an option", [
+      { text: "Camera", onPress: takePhoto },
+      { text: "Photo Library", onPress: pickImage },
+      { text: "Cancel", style: "cancel" },
+    ]);
+  };
+
+  const handlerPost = async () => {
+    if (!previewImage) {
+      return;
+    }
+    try {
+      await createPost(previewImage, description);
+      setPreviewImage(null);
+      setDescription("");
+      setShowPreview(false);
+    } catch (error) {
+      console.log("error create post: ", error);
+    }
+  };
 
   return (
     <SafeAreaView style={styles.container}>
       {/* header */}
       <View style={styles.header}>
-        <Link href={"/(protected)/create-post"}>
-          <Plus />
-        </Link>
+        <TouchableOpacity onPress={showImagePicker}>
+          <Plus style={{ pointerEvents: "none" }} />
+        </TouchableOpacity>
         <Text style={styles.mainText}>Verse</Text>
         <Link href={"/(protected)/like"}>
           <Heart />
@@ -130,11 +283,52 @@ export default function Main() {
                   <Text style={styles.title}>{item.title}</Text>
                 </View>
               </View>
-              <PostImage uri={getCoverUrl(item.cover)} />
+              <PostImage uri={item.cover} />
             </View>
           )}
         />
       </View>
+      <Modal visible={showPreview} transparent animationType="fade">
+        <View style={styles.modalContainer}>
+          <View style={styles.modalContent}>
+            <Text style={styles.modalTitle}>Preview Your Post</Text>
+            {previewImage && (
+              <Image
+                style={styles.previewImage}
+                source={{ uri: previewImage }}
+              />
+            )}
+            <TextInput
+              style={styles.descriptionInput}
+              placeholder="Add a description..."
+              placeholderTextColor={"#999"}
+              value={description}
+              onChangeText={setDescription}
+              multiline
+              maxLength={500}
+              textAlignVertical="top"
+            />
+            <View style={styles.modalButtons}>
+              <Button
+                style={[styles.modalButton, styles.cancelButton]}
+                textStyle={styles.cancelButtonText}
+                title="Cancel"
+                onPress={() => {
+                  setShowPreview(false);
+                  setPreviewImage(null);
+                  setDescription("");
+                }}
+              />
+              <Button
+                title="Post"
+                style={[styles.modalButton, styles.postButton]}
+                textStyle={styles.postButtonText}
+                onPress={handlerPost}
+              />
+            </View>
+          </View>
+        </View>
+      </Modal>
     </SafeAreaView>
   );
 }
@@ -206,6 +400,7 @@ const styles = StyleSheet.create({
   },
   card: {
     marginBottom: 24,
+    marginTop: 12,
   },
   title: {
     fontSize: 18,
@@ -246,5 +441,72 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: "600",
     flexShrink: 1,
-  }
+  },
+  // modal
+  modalContainer: {
+    flex: 1,
+    backgroundColor: "rgba(0,0,0,0.7)",
+    justifyContent: "center",
+    alignItems: "center",
+    padding: 24,
+  },
+  modalContent: {
+    backgroundColor: "#fff",
+    borderRadius: 18,
+    padding: 24,
+    width: "100%",
+    maxWidth: 400,
+  },
+  modalTitle: {
+    fontSize: 20,
+    fontWeight: 600,
+    marginBottom: 16,
+    textAlign: "center",
+    fontFamily: "SF Compact Rounded",
+  },
+  previewImage: {
+    width: "100%",
+    aspectRatio: 1,
+    borderRadius: 12,
+    marginBottom: 16,
+  },
+  descriptionInput: {
+    width: "100%",
+    minHeight: 80,
+    maxHeight: 120,
+    backgroundColor: "#f5f5f5",
+    borderRadius: 12,
+    padding: 12,
+    fontSize: 16,
+    marginBottom: 24,
+    borderWidth: 1,
+    borderColor: "#e0e0e0",
+    color: "#000",
+  },
+  modalButtons: {
+    flexDirection: "row",
+    gap: 12,
+  },
+  modalButton: {
+    flex: 1,
+    padding: 16,
+    borderRadius: 18,
+    alignItems: "center",
+  },
+  postButton: {
+    backgroundColor: "#000",
+  },
+  postButtonText: {
+    color: "white",
+    fontSize: 16,
+    fontWeight: 600,
+  },
+  cancelButtonText: {
+    color: "black",
+    fontSize: 16,
+    fontWeight: 600,
+  },
+  cancelButton: {
+    backgroundColor: "#f5f5f5",
+  },
 });
