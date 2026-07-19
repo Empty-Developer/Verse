@@ -85,7 +85,7 @@ export const uploadPostImage = async (userId: string, imageUrl: string) => {
     const fileExtension = imageUrl.split(".").pop() || "jpg";
 
     // create name for file
-    const fileName = `${userId}/profile.${fileExtension}`;
+    const fileName = `${userId}/${Date.now()}.${fileExtension}`;
 
     const file = new File(imageUrl);
     // create defined format img file

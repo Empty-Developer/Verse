@@ -16,7 +16,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import Button from "@/components/ui/Button";
 import LottieView from "lottie-react-native";
 import { router } from "expo-router";
-import { getPosts, getCoverUrl } from "@/lib/posts";
+import { getPosts } from "@/lib/posts";
 import { Post } from "@/types/post";
 import PostImage from "@/components/ui/ImagePost";
 import { supabase } from "@/lib/supabase";
@@ -272,7 +272,7 @@ export default function Main() {
                   <Text style={styles.title}>{item.title}</Text>
                 </View>
               </View>
-              <PostImage uri={getCoverUrl(item.cover)} />
+              <PostImage uri={item.cover} />
             </View>
           )}
         />

@@ -15,11 +15,3 @@ export async function getPosts(): Promise<Post[]> {
     
     return data as Post[];
 }
-
-export function getCoverUrl(url: string) {
-  return url;
-}
-
-export function getPdfUrl(url: string) {
-  return url;
-}

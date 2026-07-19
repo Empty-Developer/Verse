@@ -35,9 +35,9 @@ export const usePost = () => {
       .from('posts')
       .insert({
         user_id: user.id,
-        cover: imageUri,
+        cover: postImageUrl,
         title: title || null,
-        expiresAt: expiresAt.toISOString(),
+        expires_at: expiresAt.toISOString(),
         is_active: true
       })
       .select()
