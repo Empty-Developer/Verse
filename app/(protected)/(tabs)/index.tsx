@@ -10,21 +10,21 @@ import {
   View,
 } from "react-native";
 import React, { useEffect, useState } from "react";
-import { Link } from "expo-router";
 import { Forward, Heart, MessageSquare, Plus } from "lucide-react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import Button from "@/components/ui/Button";
 import LottieView from "lottie-react-native";
 import { router } from "expo-router";
-import { getPosts } from "@/lib/posts";
-import { Post } from "@/types/post";
+import { createPostLike, getPosts, removePostLike } from "@/lib/posts";
 import PostImage from "@/components/ui/ImagePost";
 import { supabase } from "@/lib/supabase";
 import * as ImagePicker from "expo-image-picker";
 import { usePost } from "@/hooks/usePosts";
 import { usePostStore } from "@/stores/usePostStore";
+import { Post } from "@/types/post";
 
 export default function Main() {
+  const [currentUser, setCurrentUser] = useState<any>(null);
   const [profileImage, setProfileImage] = useState<string | null>(null);
   const posts = usePostStore((state) => state.posts);
   const setPosts = usePostStore((state) => state.setPosts);
@@ -32,9 +32,6 @@ export default function Main() {
   const [showPreview, setShowPreview] = useState(false);
   const [previewImage, setPreviewImage] = useState<string | null>(null);
   const [description, setDescription] = useState<string>(""); // supa - title
-  // like
-  const like = false;
-  const likes = [];
   const { createPost } = usePost();
 
   const handlerBanner = () => {
@@ -89,6 +86,7 @@ export default function Main() {
     loadPosts();
     loadProfile();
     takeUserName();
+    loadCurrentUser();
   }, []);
 
   /**
@@ -224,6 +222,45 @@ export default function Main() {
     }
   };
 
+  // like
+  /**
+   * @description
+   */
+
+  const onLike = async (item: Post) => {
+    try {
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+
+      if (!user) return;
+
+      const liked = item.postsLikes.some((like) => like.user_id === user.id);
+
+      if (liked) {
+        await removePostLike(item.id, user.id);
+      } else {
+        await createPostLike({
+          postId: item.id,
+          userId: user.id,
+        });
+      }
+      // update list
+      const posts = await getPosts();
+      setPosts(posts);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const loadCurrentUser = async () => {
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
+    setCurrentUser(user);
+  };
+
   return (
     <SafeAreaView style={styles.container}>
       {/* header */}
@@ -237,7 +274,7 @@ export default function Main() {
         </TouchableOpacity>
       </View>
       {/* post */}
-      <View style={{ paddingHorizontal: 20 }}>
+      <View style={{ paddingHorizontal: 20 , marginBottom: 80}}>
         <FlatList
           data={posts}
           contentContainerStyle={styles.list}
@@ -265,62 +302,69 @@ export default function Main() {
               />
             </View>
           }
-          renderItem={({ item }) => (
-            <View style={styles.card}>
-              <View style={styles.postHeader}>
-                {profileImage ? (
-                  <Image
-                    source={{ uri: profileImage }}
-                    style={styles.profileImage}
-                  />
-                ) : (
-                  <View style={styles.placeholderImage}>
-                    <Image
-                      style={styles.image}
-                      source={require("@/assets/images/user.png")}
-                    />
-                  </View>
-                )}
-                <View style={styles.titleContainer}>
-                  <Text style={styles.nameText}>{username}</Text>
-                  <Text style={styles.title}>{item.title}</Text>
-                </View>
-              </View>
-              <PostImage uri={item.cover} />
+          renderItem={({ item }) => {
+            const liked = item.postsLikes.some(
+              (like) => like.user_id === currentUser?.id,
+            );
 
-              {/* like, comment, share */}
-              <View style={styles.footer}>
-                {/* likes */}
-                <View style={styles.footerButton}>
-                  <TouchableOpacity>
-                    <Heart size={24} color={like? "#ff0000ff" : "#000"} fill={like? "#ff0000ff" : "#fff"}/>
-                  </TouchableOpacity>
-                  <Text style={styles.count}>
-                    {
-                      likes?.length
-                    }
-                  </Text>
+            const likesCount = item.postsLikes.length;
+            return (
+              <View style={styles.card}>
+                <View style={styles.postHeader}>
+                  {profileImage ? (
+                    <Image
+                      source={{ uri: profileImage }}
+                      style={styles.profileImage}
+                    />
+                  ) : (
+                    <View style={styles.placeholderImage}>
+                      <Image
+                        style={styles.image}
+                        source={require("@/assets/images/user.png")}
+                      />
+                    </View>
+                  )}
+                  <View style={styles.titleContainer}>
+                    <Text style={styles.nameText}>{username}</Text>
+                    <Text style={styles.title}>{item.title}</Text>
+                  </View>
                 </View>
-                {/* comments */}
-                <View style={styles.footerButton}>
-                  <TouchableOpacity>
-                    <MessageSquare />
-                  </TouchableOpacity>
-                  <Text style={styles.count}>
-                    {
-                      0
-                    }
-                  </Text>
-                </View>
-                {/* share */}
-                <View style={styles.footerButton}>
-                  <TouchableOpacity>
-                    <Forward />
-                  </TouchableOpacity>
+                <PostImage uri={item.cover} />
+
+                {/* like, comment, share */}
+                <View style={styles.footer}>
+                  {/* likes */}
+                  <View style={styles.footerButton}>
+                    <TouchableOpacity
+                      onPress={() => {
+                        onLike(item);
+                      }}
+                    >
+                      <Heart
+                        size={22}
+                        color={liked ? "red" : "black"}
+                        fill={liked ? "red" : "transparent"}
+                      />
+                    </TouchableOpacity>
+                    <Text style={styles.count}>{likesCount}</Text>
+                  </View>
+                  {/* comments */}
+                  <View style={styles.footerButton}>
+                    <TouchableOpacity>
+                      <MessageSquare />
+                    </TouchableOpacity>
+                    <Text style={styles.count}>{0}</Text>
+                  </View>
+                  {/* share */}
+                  <View style={styles.footerButton}>
+                    <TouchableOpacity>
+                      <Forward />
+                    </TouchableOpacity>
+                  </View>
                 </View>
               </View>
-            </View>
-          )}
+            );
+          }}
         />
       </View>
       <Modal visible={showPreview} transparent animationType="fade">
@@ -549,15 +593,15 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     gap: 25,
-    marginTop: 15
+    marginTop: 15,
   },
   footerButton: {
     marginLeft: 5,
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     gap: 4,
   },
   count: {
-    fontSize: 14
+    fontSize: 14,
   },
 });
