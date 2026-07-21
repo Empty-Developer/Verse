@@ -11,7 +11,7 @@ import {
 } from "react-native";
 import React, { useEffect, useState } from "react";
 import { Link } from "expo-router";
-import { Heart, Plus } from "lucide-react-native";
+import { Forward, Heart, MessageSquare, Plus } from "lucide-react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import Button from "@/components/ui/Button";
 import LottieView from "lottie-react-native";
@@ -26,13 +26,15 @@ import { usePostStore } from "@/stores/usePostStore";
 
 export default function Main() {
   const [profileImage, setProfileImage] = useState<string | null>(null);
-  const posts = usePostStore((state) => state.posts)
-  const setPosts = usePostStore((state) => state.setPosts)
+  const posts = usePostStore((state) => state.posts);
+  const setPosts = usePostStore((state) => state.setPosts);
   // post editor or how create post
   const [showPreview, setShowPreview] = useState(false);
   const [previewImage, setPreviewImage] = useState<string | null>(null);
   const [description, setDescription] = useState<string>(""); // supa - title
-
+  // like
+  const like = false;
+  const likes = [];
   const { createPost } = usePost();
 
   const handlerBanner = () => {
@@ -230,10 +232,11 @@ export default function Main() {
           <Plus style={{ pointerEvents: "none" }} />
         </TouchableOpacity>
         <Text style={styles.mainText}>Verse</Text>
-        <Link href={"/(protected)/like"}>
-          <Heart />
-        </Link>
+        <TouchableOpacity>
+          <Heart style={{ pointerEvents: "none" }} />
+        </TouchableOpacity>
       </View>
+      {/* post */}
       <View style={{ paddingHorizontal: 20 }}>
         <FlatList
           data={posts}
@@ -284,6 +287,38 @@ export default function Main() {
                 </View>
               </View>
               <PostImage uri={item.cover} />
+
+              {/* like, comment, share */}
+              <View style={styles.footer}>
+                {/* likes */}
+                <View style={styles.footerButton}>
+                  <TouchableOpacity>
+                    <Heart size={24} color={like? "#ff0000ff" : "#000"} fill={like? "#ff0000ff" : "#fff"}/>
+                  </TouchableOpacity>
+                  <Text style={styles.count}>
+                    {
+                      likes?.length
+                    }
+                  </Text>
+                </View>
+                {/* comments */}
+                <View style={styles.footerButton}>
+                  <TouchableOpacity>
+                    <MessageSquare />
+                  </TouchableOpacity>
+                  <Text style={styles.count}>
+                    {
+                      0
+                    }
+                  </Text>
+                </View>
+                {/* share */}
+                <View style={styles.footerButton}>
+                  <TouchableOpacity>
+                    <Forward />
+                  </TouchableOpacity>
+                </View>
+              </View>
             </View>
           )}
         />
@@ -508,5 +543,21 @@ const styles = StyleSheet.create({
   },
   cancelButton: {
     backgroundColor: "#f5f5f5",
+  },
+  // like, comment and share
+  footer: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 25,
+    marginTop: 15
+  },
+  footerButton: {
+    marginLeft: 5,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+  },
+  count: {
+    fontSize: 14
   },
 });
