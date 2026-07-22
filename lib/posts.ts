@@ -17,23 +17,23 @@ export async function getPosts(): Promise<Post[]> {
  * @description this function bring id post, id user
  * and start added new data in table postLike where
  * user see like in post
- * @param {postId: number}
- * @param {userId: string}
+ * @param {post_id: number}
+ * @param {user_id: string}
  * @returns {data like}
  */
 export const createPostLike = async ({
-  postId,
-  userId
+  post_id,
+  user_id
 }: {
-  postId: number;
-  userId: string;
+  post_id: number;
+  user_id: string;
 }) => {
   try {
     const { error } = await supabase
       .from("postsLikes")
       .insert({
-        postId,
-        userId
+        post_id,
+        user_id
       })
       .select()
       .single();

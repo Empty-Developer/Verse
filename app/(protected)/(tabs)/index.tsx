@@ -429,7 +429,7 @@ const styles = StyleSheet.create({
     fontFamily: "SF Compact Rounded",
   },
   banner: {
-    backgroundColor: "#eac3f4ff",
+    backgroundColor: "#7cf083ff",
     borderRadius: 20,
     padding: 20,
     flexDirection: "row",
