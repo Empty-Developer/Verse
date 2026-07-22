@@ -48,13 +48,13 @@ export const createPostLike = async ({
   }
 };
 
-export const removePostLike = async (postId: number, userId: string) => {
+export const removePostLike = async (post_id: number, user_id: string) => {
   try {
     const { error } = await supabase
       .from("postsLikes")
       .delete()
-      .eq("postId", postId)
-      .eq("userId", userId)
+      .eq("post_id", post_id)
+      .eq("user_id", user_id)
 
     if (error) {
       console.log("remove error: ", error);

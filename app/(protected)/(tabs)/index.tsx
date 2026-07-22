@@ -15,7 +15,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import Button from "@/components/ui/Button";
 import LottieView from "lottie-react-native";
 import { router } from "expo-router";
-import { createPostLike, getPosts, removePostLike } from "@/lib/posts";
+import { getPosts } from "@/lib/posts";
 import PostImage from "@/components/ui/ImagePost";
 import { supabase } from "@/lib/supabase";
 import * as ImagePicker from "expo-image-picker";
@@ -226,31 +226,13 @@ export default function Main() {
   /**
    * @description
    */
-
+  const toggleLike = usePostStore((state) => state.toggleLike);
   const onLike = async (item: Post) => {
-    try {
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
-
-      if (!user) return;
-
-      const liked = item.postsLikes.some((like) => like.user_id === user.id);
-
-      if (liked) {
-        await removePostLike(item.id, user.id);
-      } else {
-        await createPostLike({
-          postId: item.id,
-          userId: user.id,
-        });
-      }
-      // update list
-      const posts = await getPosts();
-      setPosts(posts);
-    } catch (error) {
-      console.log(error);
+    if (!currentUser) {
+      return;
     }
+
+    await toggleLike(item.id, currentUser.id);
   };
 
   const loadCurrentUser = async () => {
@@ -274,7 +256,7 @@ export default function Main() {
         </TouchableOpacity>
       </View>
       {/* post */}
-      <View style={{ paddingHorizontal: 20 , marginBottom: 80}}>
+      <View style={{ paddingHorizontal: 20, marginBottom: 80 }}>
         <FlatList
           data={posts}
           contentContainerStyle={styles.list}
@@ -303,11 +285,13 @@ export default function Main() {
             </View>
           }
           renderItem={({ item }) => {
+
             const liked = item.postsLikes.some(
               (like) => like.user_id === currentUser?.id,
             );
 
             const likesCount = item.postsLikes.length;
+
             return (
               <View style={styles.card}>
                 <View style={styles.postHeader}>
@@ -344,6 +328,7 @@ export default function Main() {
                         size={22}
                         color={liked ? "red" : "black"}
                         fill={liked ? "red" : "transparent"}
+                        style={{ pointerEvents: "none" }}
                       />
                     </TouchableOpacity>
                     <Text style={styles.count}>{likesCount}</Text>
