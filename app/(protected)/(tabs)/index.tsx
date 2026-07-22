@@ -224,7 +224,8 @@ export default function Main() {
 
   // like
   /**
-   * @description
+   * @description this function check state like in post
+   * if post have like count in table supabase update
    */
   const toggleLike = usePostStore((state) => state.toggleLike);
   const onLike = async (item: Post) => {
