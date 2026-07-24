@@ -36,7 +36,7 @@ export const useCommentStore = create<CommentStore>((set, get) => ({
     const comments = await fetchComments(post_id);
 
     set({
-      comments: [],
+      comments: comments ?? [],
       loading: false,
     });
   },

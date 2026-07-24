@@ -6,7 +6,8 @@ export async function getPosts(): Promise<Post[]> {
     .from("posts")
     .select(`
       *,
-      postsLikes(*)
+      postsLikes(user_id),
+      comments(id)
     `);
 
   if (error) throw error;

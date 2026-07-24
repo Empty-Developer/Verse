@@ -23,8 +23,8 @@ import { usePost } from "@/hooks/usePosts";
 import { usePostStore } from "@/stores/usePostStore";
 import { Post } from "@/types/post";
 import { BottomSheetMethod } from "@/components/ui/bottom-sheet/BottomSheet";
-import BottomSheet from "@/components/ui/bottom-sheet/BottomSheet";
-import Input from "@/components/ui/Input";
+import CommentsSheet from "@/components/ui/comments/CommentsSheet";
+import { useCommentStore } from "@/stores/useCommentStore";
 
 export default function Main() {
   const [currentUser, setCurrentUser] = useState<any>(null);
@@ -37,14 +37,20 @@ export default function Main() {
   const [description, setDescription] = useState<string>(""); // supa - title
   const { createPost } = usePost();
   // bottom sheet ui component
- const commentRef = useRef<BottomSheetMethod>(null);
+  const commentRef = useRef<BottomSheetMethod>(null);
 
   /**
    * @description - this function open window bottom sheet
    */
-  const pressedHandlerBottomSheetComment = useCallback(() => {
-    commentRef.current?.expand();
-  }, []);
+  const openComments = useCommentStore((state) => state.openComments);
+
+  const pressedHandlerBottomSheetComment = useCallback(
+    async (postId: number) => {
+      await openComments(postId);
+      commentRef.current?.expand();
+    },
+    [openComments],
+  );
 
   const handlerBanner = () => {
     router.push("/(protected)/(tabs)/library");
@@ -304,6 +310,8 @@ export default function Main() {
 
             const likesCount = item.postsLikes.length;
 
+            const commentsCount = item.comments.length
+
             return (
               <View style={styles.card}>
                 <View style={styles.postHeader}>
@@ -348,14 +356,14 @@ export default function Main() {
                   {/* comments */}
                   <View style={styles.footerButton}>
                     <TouchableOpacity
-                      onPress={() => pressedHandlerBottomSheetComment()}
+                      onPress={() => pressedHandlerBottomSheetComment(item.id)}
                     >
                       <MessageSquare
                         size={24}
                         style={{ pointerEvents: "none" }}
                       />
                     </TouchableOpacity>
-                    <Text style={styles.count}>{0}</Text>
+                    <Text style={styles.count}>{commentsCount}</Text>
                   </View>
                   {/* share */}
                   <View style={styles.footerButton}>
@@ -410,13 +418,7 @@ export default function Main() {
           </View>
         </View>
       </Modal>
-      <BottomSheet
-        ref={commentRef}
-        snapTo="92%"
-        backgroundColor="white"
-        backDropColor="rgba(0,0,0,0.5)"
-      >
-      </BottomSheet>
+      <CommentsSheet bottomSheetRef={commentRef} />
     </SafeAreaView>
   );
 }

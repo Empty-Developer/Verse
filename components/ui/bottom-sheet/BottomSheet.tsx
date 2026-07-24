@@ -176,7 +176,7 @@ const BottomSheet = forwardRef<BottomSheetMethod, Props>(
           close={close}
         />
         <GestureDetector gesture={pan}>
-          <Animated.View
+          <Animated.View style={{ flex: 1 }}
             style={[
               styles.container,
               animationStyle,
@@ -192,15 +192,12 @@ const BottomSheet = forwardRef<BottomSheetMethod, Props>(
             <GestureDetector
               gesture={Gesture.Simultaneous(scrollViewGesture, panScroll)}
             >
-              <Animated.ScrollView
+              <View
                 {...props}
-                scrollEnabled={enableScroll}
-                bounces={false}
-                scrollEventThrottle={16}
-                onScroll={onScroll}
+                style={{ flex: 1 }}
               >
                 {children}
-              </Animated.ScrollView>
+              </View>
             </GestureDetector>
           </Animated.View>
         </GestureDetector>

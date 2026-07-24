@@ -5,7 +5,7 @@ import CommentList from './CommentList'
 import CommentInput from './CommentInput'
 
 type Props = {
-    bottomSheetRef: RefObject<BottomSheetMethod>;
+    bottomSheetRef: React.RefObject<BottomSheetMethod | null>;
 }
 
 export default function CommentsSheet({

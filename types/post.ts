@@ -6,6 +6,9 @@ export interface Post {
   cover: string;
 
   postsLikes: PostLike[];
+  comments: {
+    id: number;
+  }[];
 }
 
 interface PostLike {
