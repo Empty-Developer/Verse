@@ -5,7 +5,7 @@ export interface Comment {
   user_id: string;
   post_id: number;
 
-  profile?: {
+  profile: {
     username: string;
     avatar_url: string | null;
   };

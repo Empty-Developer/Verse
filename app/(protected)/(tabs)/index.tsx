@@ -37,13 +37,13 @@ export default function Main() {
   const [description, setDescription] = useState<string>(""); // supa - title
   const { createPost } = usePost();
   // bottom sheet ui component
-  const bottomSheetCommentRef = useRef<BottomSheetMethod>(null);
+ const commentRef = useRef<BottomSheetMethod>(null);
 
   /**
    * @description - this function open window bottom sheet
    */
   const pressedHandlerBottomSheetComment = useCallback(() => {
-    bottomSheetCommentRef.current?.expand();
+    commentRef.current?.expand();
   }, []);
 
   const handlerBanner = () => {
@@ -411,7 +411,7 @@ export default function Main() {
         </View>
       </Modal>
       <BottomSheet
-        ref={bottomSheetCommentRef}
+        ref={commentRef}
         snapTo="92%"
         backgroundColor="white"
         backDropColor="rgba(0,0,0,0.5)"
