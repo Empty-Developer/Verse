@@ -10,7 +10,7 @@ import {
   View,
 } from "react-native";
 import React, { useCallback, useEffect, useRef, useState } from "react";
-import { Forward, Heart, MessageSquare, Plus } from "lucide-react-native";
+import { Heart, MessageSquare, Plus } from "lucide-react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import Button from "@/components/ui/Button";
 import LottieView from "lottie-react-native";
@@ -335,7 +335,7 @@ export default function Main() {
                 </View>
                 <PostImage uri={item.cover} />
 
-                {/* like, comment, share */}
+                {/* like, comment */}
                 <View style={styles.footer}>
                   {/* likes */}
                   <View style={styles.footerButton}>
@@ -364,12 +364,6 @@ export default function Main() {
                       />
                     </TouchableOpacity>
                     <Text style={styles.count}>{commentsCount}</Text>
-                  </View>
-                  {/* share */}
-                  <View style={styles.footerButton}>
-                    <TouchableOpacity>
-                      <Forward size={24} />
-                    </TouchableOpacity>
                   </View>
                 </View>
               </View>
