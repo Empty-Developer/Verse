@@ -10,7 +10,7 @@ type Props = {
   topAnimation: SharedValue<number>;
   openHeight: number;
   closeHeight: number;
-  bacDropColor: string;
+  backDropColor: string;
   close: () => void;
 };
 /**
@@ -29,14 +29,14 @@ const BackDrop = ({
   topAnimation,
   openHeight,
   closeHeight,
-  bacDropColor,
+  backDropColor,
   close,
 }: Props) => {
   const backDropAnimation = useAnimatedStyle(() => {
     const opacity = interpolate(
       topAnimation.value,
       [closeHeight, openHeight],
-      [0, 0.5],
+      [0, 0.5], // shadow
     );
     const display = opacity === 0 ? "none" : "flex";
     return {
@@ -54,7 +54,7 @@ const BackDrop = ({
         style={[
           styles.backDrop,
           backDropAnimation,
-          { backgroundColor: bacDropColor },
+          { backgroundColor: backDropColor },
         ]}
       />
     </TouchableWithoutFeedback>

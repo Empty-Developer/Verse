@@ -9,7 +9,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { Forward, Heart, MessageSquare, Plus } from "lucide-react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import Button from "@/components/ui/Button";
@@ -22,6 +22,9 @@ import * as ImagePicker from "expo-image-picker";
 import { usePost } from "@/hooks/usePosts";
 import { usePostStore } from "@/stores/usePostStore";
 import { Post } from "@/types/post";
+import { BottomSheetMethod } from "@/components/ui/bottom-sheet/BottomSheet";
+import BottomSheet from "@/components/ui/bottom-sheet/BottomSheet";
+import Input from "@/components/ui/Input";
 
 export default function Main() {
   const [currentUser, setCurrentUser] = useState<any>(null);
@@ -33,6 +36,15 @@ export default function Main() {
   const [previewImage, setPreviewImage] = useState<string | null>(null);
   const [description, setDescription] = useState<string>(""); // supa - title
   const { createPost } = usePost();
+  // bottom sheet ui component
+  const bottomSheetCommentRef = useRef<BottomSheetMethod>(null);
+
+  /**
+   * @description - this function open window bottom sheet
+   */
+  const pressedHandlerBottomSheetComment = useCallback(() => {
+    bottomSheetCommentRef.current?.expand();
+  }, []);
 
   const handlerBanner = () => {
     router.push("/(protected)/(tabs)/library");
@@ -286,7 +298,6 @@ export default function Main() {
             </View>
           }
           renderItem={({ item }) => {
-
             const liked = item.postsLikes.some(
               (like) => like.user_id === currentUser?.id,
             );
@@ -326,7 +337,7 @@ export default function Main() {
                       }}
                     >
                       <Heart
-                        size={22}
+                        size={24}
                         color={liked ? "red" : "black"}
                         fill={liked ? "red" : "transparent"}
                         style={{ pointerEvents: "none" }}
@@ -336,15 +347,20 @@ export default function Main() {
                   </View>
                   {/* comments */}
                   <View style={styles.footerButton}>
-                    <TouchableOpacity>
-                      <MessageSquare />
+                    <TouchableOpacity
+                      onPress={() => pressedHandlerBottomSheetComment()}
+                    >
+                      <MessageSquare
+                        size={24}
+                        style={{ pointerEvents: "none" }}
+                      />
                     </TouchableOpacity>
                     <Text style={styles.count}>{0}</Text>
                   </View>
                   {/* share */}
                   <View style={styles.footerButton}>
                     <TouchableOpacity>
-                      <Forward />
+                      <Forward size={24} />
                     </TouchableOpacity>
                   </View>
                 </View>
@@ -394,6 +410,14 @@ export default function Main() {
           </View>
         </View>
       </Modal>
+      <BottomSheet
+        ref={bottomSheetCommentRef}
+        snapTo="92%"
+        backgroundColor="white"
+        backDropColor="rgba(0,0,0,0.5)"
+      >
+        <Input placeholder="Comment"/>
+      </BottomSheet>
     </SafeAreaView>
   );
 }
