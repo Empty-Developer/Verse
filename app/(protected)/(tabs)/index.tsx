@@ -416,7 +416,6 @@ export default function Main() {
         backgroundColor="white"
         backDropColor="rgba(0,0,0,0.5)"
       >
-        <Input placeholder="Comment"/>
       </BottomSheet>
     </SafeAreaView>
   );
