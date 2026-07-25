@@ -1,4 +1,5 @@
 import {
+  Alert,
   Image,
   Keyboard,
   StyleSheet,
@@ -13,12 +14,17 @@ import { uploadProfileBackground, uploadProfileImage } from "@/lib/storage";
 import { supabase } from "@/lib/supabase";
 import { PencilLine } from "lucide-react-native";
 import { getUserBio, updateUserBio } from "@/lib/bio-user";
+import Button from "@/components/ui/Button";
+import { useRouter } from "expo-router";
+import { useAuthStore } from "@/stores/useAuthStore";
 
 export default function UserScreen() {
   const [profileImage, setProfileImage] = useState<string | null>(null);
   const [backgroundImage, setBackgroundImage] = useState<string | null>(null);
   const [bio, setBio] = useState("");
   const [editingBio, setEditingBio] = useState(false);
+  const { logout } = useAuthStore();
+  const router = useRouter()
 
   /**
    * @description opens the device gallery, lets
@@ -147,6 +153,23 @@ export default function UserScreen() {
     loadBio();
   }, []);
 
+  const handleSignOut = async () => {
+    Alert.alert("Sign Out", "Are you sure want to sign out?", [
+      {
+        text: "Cancel",
+        style: "cancel",
+      },
+      {
+        text: "Sign Out",
+        style: "destructive",
+        onPress: async () => {
+          await logout();
+          router.replace("/(auth)/sign-in");
+        },
+      },
+    ]);
+  };
+
   return (
     <View style={styles.container}>
       {/* background image */}
@@ -229,6 +252,14 @@ export default function UserScreen() {
             <Text style={styles.bio}>{bio || "Tap to add bio"}</Text>
           </TouchableOpacity>
         )}
+        <View style={styles.componentButtonSignOut}>
+          <Button
+            title="Sign Out"
+            style={styles.signOutButton}
+            textStyle={styles.textSignOutButton}
+            onPress={handleSignOut}
+          />
+        </View>
       </View>
     </View>
   );
@@ -320,5 +351,20 @@ const styles = StyleSheet.create({
     marginHorizontal: 30,
     minHeight: 80,
     textAlignVertical: "top",
+  },
+  // button
+  signOutButton: {
+    backgroundColor: '#f5f5f5',
+    marginBottom: 8,
+    borderColor: '#000',
+    borderWidth: 1,
+  },
+  componentButtonSignOut: {
+    paddingHorizontal: 60
+  },
+  textSignOutButton: {
+    color: '#000',
+    fontWeight: 500,
+    fontSize: 16,
   },
 });
