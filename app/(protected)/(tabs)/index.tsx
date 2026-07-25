@@ -308,16 +308,16 @@ export default function Main() {
               (like) => like.user_id === currentUser?.id,
             );
 
-            const likesCount = item.postsLikes.length;
+            const likesCount = item.postsLikes?.length ?? 0;
 
-            const commentsCount = item.comments.length
+            const commentsCount = item.comments?.length ?? 0;
 
             return (
               <View style={styles.card}>
                 <View style={styles.postHeader}>
-                  {profileImage ? (
+                  {item.profile?.avatar_url ? (
                     <Image
-                      source={{ uri: profileImage }}
+                      source={{ uri: item.profile.avatar_url }}
                       style={styles.profileImage}
                     />
                   ) : (
@@ -329,7 +329,7 @@ export default function Main() {
                     </View>
                   )}
                   <View style={styles.titleContainer}>
-                    <Text style={styles.nameText}>{username}</Text>
+                    <Text style={styles.nameText}>{item.profile?.username}</Text>
                     <Text style={styles.title}>{item.title}</Text>
                   </View>
                 </View>

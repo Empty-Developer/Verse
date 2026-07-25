@@ -9,6 +9,11 @@ export interface Post {
   comments: {
     id: number;
   }[];
+
+  profile: {
+    username: string;
+    avatar_url: string | null;
+  };
 }
 
 interface PostLike {

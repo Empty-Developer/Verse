@@ -6,8 +6,12 @@ export async function getPosts(): Promise<Post[]> {
     .from("posts")
     .select(`
       *,
-      postsLikes(user_id),
-      comments(id)
+      profile:profiles!posts_user_id_fkey(
+        username,
+        avatar_url
+      ),
+      postsLikes(*),
+      comments(*)
     `);
 
   if (error) throw error;

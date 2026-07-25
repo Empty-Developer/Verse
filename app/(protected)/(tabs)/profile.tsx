@@ -360,7 +360,8 @@ const styles = StyleSheet.create({
     borderWidth: 1,
   },
   componentButtonSignOut: {
-    paddingHorizontal: 60
+    paddingHorizontal: 60,
+    marginTop: 25,
   },
   textSignOutButton: {
     color: '#000',
