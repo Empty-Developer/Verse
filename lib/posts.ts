@@ -69,7 +69,7 @@ export const removePostLike = async (post_id: number, user_id: string) => {
   }
 };
 
-export const getLikePosts = async (user_id: string) => {
+export const getLikePosts = async (user_id: string): Promise<Post[]> => {
   const { data, error } = await supabase
     .from("postsLikes")
     .select(
@@ -90,7 +90,7 @@ export const getLikePosts = async (user_id: string) => {
 
   if (error) {
     console.log("get like error: ", error);
-    return;
+    throw error;
   }
-  return data.map(item => item.posts);
+  return data.map(item => item.posts) as unknown as Post[];
 };

@@ -56,6 +56,10 @@ export default function Main() {
     router.push("/(protected)/(tabs)/library");
   };
 
+  const handlerLikeRout = () => {
+    router.push("/(protected)/like")
+  }
+
   const loadProfile = async () => {
     try {
       const {
@@ -270,7 +274,7 @@ export default function Main() {
           <Plus style={{ pointerEvents: "none" }} />
         </TouchableOpacity>
         <Text style={styles.mainText}>Verse</Text>
-        <TouchableOpacity>
+        <TouchableOpacity onPress={handlerLikeRout}>
           <Heart style={{ pointerEvents: "none" }} />
         </TouchableOpacity>
       </View>
