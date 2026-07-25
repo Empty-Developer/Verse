@@ -2,9 +2,7 @@ import { supabase } from "@/lib/supabase";
 import { Post } from "@/types/post";
 
 export async function getPosts(): Promise<Post[]> {
-  const { data, error } = await supabase
-    .from("posts")
-    .select(`
+  const { data, error } = await supabase.from("posts").select(`
       *,
       profile:profiles!posts_user_id_fkey(
         username,
@@ -28,7 +26,7 @@ export async function getPosts(): Promise<Post[]> {
  */
 export const createPostLike = async ({
   post_id,
-  user_id
+  user_id,
 }: {
   post_id: number;
   user_id: string;
@@ -38,7 +36,7 @@ export const createPostLike = async ({
       .from("postsLikes")
       .insert({
         post_id,
-        user_id
+        user_id,
       })
       .select()
       .single();
@@ -59,7 +57,7 @@ export const removePostLike = async (post_id: number, user_id: string) => {
       .from("postsLikes")
       .delete()
       .eq("post_id", post_id)
-      .eq("user_id", user_id)
+      .eq("user_id", user_id);
 
     if (error) {
       console.log("remove error: ", error);
@@ -69,4 +67,30 @@ export const removePostLike = async (post_id: number, user_id: string) => {
     console.log("removePostLike Error: ", error);
     return;
   }
+};
+
+export const getLikePosts = async (user_id: string) => {
+  const { data, error } = await supabase
+    .from("postsLikes")
+    .select(
+      `
+      post_id,
+      posts(
+        *,
+        profile:profiles!posts_user_id_fkey(
+          username,
+          avatar_url
+        ),
+        postsLikes(*),
+        comments(*)
+      )
+    `,
+    )
+    .eq("user_id", user_id);
+
+  if (error) {
+    console.log("get like error: ", error);
+    return;
+  }
+  return data.map(item => item.posts);
 };
