@@ -15,10 +15,10 @@ export default function TabLayout() {
         <Label>Library</Label>
       </NativeTabs.Trigger>
 
-      <NativeTabs.Trigger name="book">
+      {/* <NativeTabs.Trigger name="book">
         <Icon sf="fleuron" drawable="md-person" selectedColor={'#6e6a6aff'}/>
         <Label>AI Book</Label>
-      </NativeTabs.Trigger>
+      </NativeTabs.Trigger> */}
       
       <NativeTabs.Trigger name="profile">
         <Icon sf="person" drawable="md-person" selectedColor={'#6e6a6aff'}/>
