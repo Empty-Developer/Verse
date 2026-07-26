@@ -27,6 +27,18 @@ export async function getBooks(): Promise<Book[]> {
   return data as Book[];
 }
 
+export async function getBook(id: number): Promise<Book> {
+  const { data, error } = await supabase
+    .from("library")
+    .select("*")
+    .eq("id", id)
+    .single();
+
+  if (error) throw error;
+
+  return data as Book;
+}
+
 export function getCoverUrl(url: string) {
   return url;
 }

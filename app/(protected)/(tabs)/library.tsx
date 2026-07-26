@@ -1,15 +1,11 @@
-import {
-  StyleSheet,
-  Text,
-  View,
-  FlatList,
-  Image,
-} from "react-native";
+import { StyleSheet, Text, View, FlatList, Image } from "react-native";
 import React, { useEffect, useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import Search from "@/components/ui/Search";
 import { getBooks, getCoverUrl } from "@/lib/books";
 import { Book } from "@/types/book";
+import { router } from "expo-router";
+import { TouchableOpacity } from "react-native";
 
 /**
  * @description
@@ -67,16 +63,20 @@ export default function Library() {
           contentContainerStyle={styles.list}
           columnWrapperStyle={styles.row}
           renderItem={({ item }) => (
-            <View style={styles.card}>
+            <TouchableOpacity
+              style={styles.card}
+              onPress={() => {
+                router.push(`/book/${item.id}`);
+              }}
+            >
               <Image
                 source={{ uri: getCoverUrl(item.cover) }}
                 style={styles.cover}
               />
-
               <Text style={styles.title} numberOfLines={1}>
                 {item.title}
               </Text>
-            </View>
+            </TouchableOpacity>
           )}
         />
       </View>
@@ -90,28 +90,23 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     marginBottom: 120,
   },
-
   list: {
     paddingBottom: 20,
     marginTop: 30,
   },
-
   row: {
     justifyContent: "space-between",
     marginBottom: 26,
   },
-
   card: {
     width: "46%",
   },
-
   cover: {
     width: "100%",
     height: 220,
     borderRadius: 16,
     marginBottom: 6,
   },
-
   title: {
     fontSize: 14,
     fontWeight: "600",

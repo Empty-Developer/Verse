@@ -13,6 +13,7 @@ export default function ProtectedLayout() {
       <Stack.Screen name="(tabs)"/>
       <Stack.Screen name="create-post" />
       <Stack.Screen name="like" />
+      <Stack.Screen name="book" />
     </Stack>
   )
 }
